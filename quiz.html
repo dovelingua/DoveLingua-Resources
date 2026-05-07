@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="description" content="Practice Zone — English exercises by Teacher Dove. English Dove." />
+  <meta name="theme-color" content="#5B47A8" />
+  <title>Practice Zone | English Dove</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --teal:         #0D7A6B;
+      --teal-dark:    #085048;
+      --teal-light:   #E6F4F1;
+      --gold:         #C8852A;
+      --gold-light:   #FDF3E3;
+      --gold-dark:    #7A4F10;
+      --purple:       #5B47A8;
+      --purple-light: #EEF0FB;
+      --purple-dark:  #3C3489;
+      --blue:         #185FA5;
+      --blue-light:   #E6F1FB;
+      --green:        #3B6D11;
+      --green-light:  #EAF3DE;
+      --green-dark:   #27500A;
+      --red:          #A32D2D;
+      --red-light:    #FCEBEB;
+      --red-dark:     #791F1F;
+      --white:        #FFFFFF;
+      --off-white:    #F8F7F4;
+      --text:         #1A1A2E;
+      --text-muted:   #6B7280;
+      --border:       #E5E7EB;
+      --font-head:    'Playfair Display', Georgia, serif;
+      --font-body:    'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* APP SHELL — same structure as blog.html */
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+    body {
+      font-family: var(--font-body);
+      background: var(--off-white);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+    }
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      overflow: hidden;
+      animation: pageIn 0.3s cubic-bezier(0.4,0,0.2,1) both;
+    }
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* HEADER */
+    .page-header {
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--purple-dark) 0%, var(--purple) 100%);
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 2px 12px rgba(91,71,168,0.3);
+      z-index: 10;
+    }
+    .back-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.28);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; text-decoration: none; color: white;
+      flex-shrink: 0; transition: all 0.2s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.28); }
+    .header-centre { flex: 1; }
+    .header-title {
+      font-family: var(--font-head);
+      font-size: 1.1rem; font-weight: 700; color: white; line-height: 1;
+    }
+    .header-sub {
+      font-size: 0.68rem; color: rgba(255,255,255,0.7);
+      margin-top: 2px; font-weight: 300;
+    }
+    .teacher-label {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 20px; padding: 4px 12px;
+      font-size: 0.7rem; font-weight: 500;
+      color: white; white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* WELCOME TICKER */
+    .welcome-bar {
+      flex-shrink: 0;
+      background: var(--purple-dark);
+      padding: 7px 0; overflow: hidden;
+    }
+    .welcome-ticker {
+      display: inline-block; white-space: nowrap;
+      animation: tickerScroll 26s linear infinite;
+      font-size: 0.78rem; color: rgba(255,255,255,0.72);
+      padding-left: 100%;
+    }
+    @keyframes tickerScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-100%); }
+    }
+
+    /* SCROLL AREA — only this scrolls */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* SEARCH */
+    .search-wrap { position: relative; margin: 14px 16px 0; }
+    .search-icon {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.95rem; color: var(--text-muted);
+    }
+    .search-input {
+      width: 100%; padding: 11px 16px 11px 40px;
+      border: 1px solid var(--border); border-radius: 12px;
+      font-family: var(--font-body); font-size: 0.88rem;
+      background: var(--white); color: var(--text);
+      outline: none; transition: border 0.2s;
+    }
+    .search-input:focus { border-color: var(--purple); }
+    .search-input::placeholder { color: var(--text-muted); }
+
+    /* CONTENT */
+    .content { padding: 14px 16px 20px; max-width: 600px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted); margin: 14px 0 10px;
+    }
+
+    /* QUICK EXERCISE */
+    .quick-exercise {
+      background: var(--white); border-radius: 14px;
+      overflow: hidden; margin-bottom: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      animation: fadeUp 0.35s 0.05s ease both;
+    }
+    .quick-top {
+      background: linear-gradient(90deg, var(--purple-dark), var(--purple));
+      padding: 10px 16px;
+    }
+    .quick-badge {
+      font-size: 0.72rem; font-weight: 600;
+      color: rgba(255,255,255,0.92);
+      text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .quick-body { padding: 14px 16px; }
+    .quick-q {
+      font-size: 0.95rem; font-weight: 500; color: var(--text);
+      margin-bottom: 12px; line-height: 1.45;
+    }
+    .quick-q span { color: var(--purple); font-weight: 700; }
+    .quick-options { display: flex; flex-direction: column; gap: 8px; }
+    .quick-opt {
+      padding: 10px 14px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--off-white);
+      font-size: 0.88rem; color: var(--text); cursor: pointer;
+      transition: all 0.2s; text-align: left;
+      font-family: var(--font-body); font-weight: 400;
+    }
+    .quick-opt:hover { border-color: var(--purple); background: var(--purple-light); color: var(--purple-dark); }
+    .quick-opt.correct { border-color: var(--green); background: var(--green-light); color: var(--green-dark); font-weight: 500; }
+    .quick-opt.wrong   { border-color: var(--red); background: var(--red-light); color: var(--red-dark); }
+    .quick-opt.disabled { pointer-events: none; }
+
+    /* FEEDBACK */
+    .feedback-box { margin-top: 12px; display: none; }
+    .feedback-box.show { display: block; }
+    .fb-block { border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; }
+    .fb-block.en-correct { background: var(--green-light); border: 1px solid var(--green); }
+    .fb-block.pt-correct { background: var(--teal-light);  border: 1px solid var(--teal); }
+    .fb-block.en-wrong   { background: var(--red-light);   border: 1px solid var(--red); }
+    .fb-block.pt-wrong   { background: #FFF3CD;             border: 1px solid var(--gold); }
+    .fb-block.motivate   {
+      background: linear-gradient(135deg, var(--purple-light), #F0ECFF);
+      border: 1px solid rgba(91,71,168,0.2);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .fb-label {
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 4px; display: block;
+    }
+    .en-correct .fb-label { color: var(--green-dark); }
+    .pt-correct .fb-label { color: var(--teal-dark); }
+    .en-wrong   .fb-label { color: var(--red-dark); }
+    .pt-wrong   .fb-label { color: var(--gold-dark); }
+    .fb-text { font-size: 0.88rem; line-height: 1.6; }
+    .en-correct .fb-text { color: var(--green-dark); }
+    .pt-correct .fb-text { color: var(--teal-dark); }
+    .en-wrong   .fb-text { color: var(--red-dark); }
+    .pt-wrong   .fb-text { color: var(--gold-dark); }
+    .fb-reaction { font-size: 1.3rem; flex-shrink: 0; }
+    .fb-quote    { font-size: 0.92rem; font-weight: 600; color: var(--purple-dark); }
+
+    /* EXERCISE CARDS — LIST */
+    .exercise-list { display: flex; flex-direction: column; gap: 8px; }
+    .exercise-card {
+      background: var(--white); border-radius: 14px;
+      padding: 14px 16px; text-decoration: none; color: var(--text);
+      display: flex; align-items: center; gap: 14px;
+      transition: all 0.22s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      position: relative; overflow: hidden;
+      animation: fadeUp 0.35s ease both;
+    }
+    .exercise-card::before {
+      content: ''; position: absolute;
+      left: 0; top: 0; bottom: 0; width: 4px;
+      border-radius: 0 3px 3px 0;
+    }
+    .exercise-card.mc::before   { background: var(--blue); }
+    .exercise-card.fill::before { background: var(--green); }
+    .exercise-card.read::before { background: var(--gold); }
+    .exercise-card.spot::before { background: var(--red); }
+    .exercise-card.speak::before{ background: var(--text-muted); }
+    .exercise-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.09); }
+    .exercise-card:active { transform: scale(0.98); }
+    .exercise-card.coming-soon { opacity: 0.5; cursor: default; }
+    .exercise-card.coming-soon:hover { transform: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .exercise-card:nth-child(1) { animation-delay: 0.05s; }
+    .exercise-card:nth-child(2) { animation-delay: 0.10s; }
+    .exercise-card:nth-child(3) { animation-delay: 0.15s; }
+    .exercise-card:nth-child(4) { animation-delay: 0.20s; }
+    .exercise-card:nth-child(5) { animation-delay: 0.25s; }
+    .exercise-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.25rem; flex-shrink: 0;
+    }
+    .exercise-card.mc   .exercise-icon { background: var(--blue-light); }
+    .exercise-card.fill .exercise-icon { background: var(--green-light); }
+    .exercise-card.read .exercise-icon { background: var(--gold-light); }
+    .exercise-card.spot .exercise-icon { background: var(--red-light); }
+    .exercise-card.speak .exercise-icon { background: var(--off-white); }
+    .exercise-info { flex: 1; }
+    .exercise-name { font-size: 0.95rem; font-weight: 500; color: var(--text); display: block; margin-bottom: 3px; }
+    .exercise-desc { font-size: 0.76rem; color: var(--text-muted); display: block; }
+    .exercise-count { font-size: 0.68rem; font-weight: 500; color: var(--text-muted); flex-shrink: 0; }
+    .exercise-arrow { font-size: 1.1rem; color: var(--text-muted); flex-shrink: 0; }
+    .soon-tag {
+      font-size: 0.65rem; font-weight: 500; padding: 2px 8px; border-radius: 20px;
+      background: var(--off-white); color: var(--text-muted); border: 1px solid var(--border);
+    }
+
+    /* SEARCH RESULTS */
+    .search-results { display: none; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .search-results.visible { display: flex; }
+    .no-results { text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.9rem; }
+
+    /* CONFETTI */
+    #confettiCanvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 999; display: none;
+    }
+
+    /* BOTTOM BAR — flex-shrink 0, never moves */
+    .bottom-bar {
+      flex-shrink: 0;
+      background: var(--white);
+      border-top: 1.5px solid var(--border);
+      display: flex; align-items: center;
+      justify-content: space-around;
+      padding: 8px 0;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.08);
+      z-index: 10;
+    }
+    .bottom-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      background: none; border: none; cursor: pointer; color: var(--text-muted);
+      font-family: var(--font-body); font-size: 0.58rem; font-weight: 600;
+      padding: 4px 8px; border-radius: 12px; transition: all 0.2s;
+      text-decoration: none; min-width: 54px;
+    }
+    .bottom-btn .b-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; transition: all 0.2s;
+    }
+    .bottom-btn.active { color: var(--purple); }
+    .bottom-btn.active .b-icon { background: var(--purple-light); }
+    .bottom-btn:hover { color: var(--teal); }
+    .bottom-btn:hover .b-icon { background: var(--teal-light); }
+  </style>
+</head>
+<body>
+
+  <canvas id="confettiCanvas"></canvas>
+
+<div class="app-shell">
+
+  <!-- HEADER — STAYS AT TOP -->
+  <div class="page-header">
+    <a href="index.html" class="back-btn" onclick="navigateBack(event,'index.html')">&#8592;</a>
+    <div class="header-centre">
+      <div class="header-title">📝 Practice Zone</div>
+      <div class="header-sub">Exercícios · DoveLingua</div>
+    </div>
+    <div class="teacher-label">👨‍🏫 Teacher Dove</div>
+  </div>
+
+  <!-- WELCOME TICKER — STAYS BELOW HEADER -->
+  <div class="welcome-bar">
+    <span class="welcome-ticker">
+      📝 Inglês precisa de prática! Cada exercício torna-te mais forte. Sem pressão, sem medo, apenas crescimento. Escolhe um exercício e vamos praticar 🇬🇧! &nbsp;&nbsp;&nbsp;&nbsp;
+      📝 Inglês precisa de prática! Cada exercício torna-te mais forte. Sem pressão, sem medo, apenas crescimento. Escolhe um exercício e vamos praticar 🇬🇧!
+    </span>
+  </div>
+
+  <!-- SCROLL AREA — ONLY THIS SCROLLS -->
+  <div class="scroll-area">
+
+    <!-- SEARCH -->
+    <div class="search-wrap">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" class="search-input" id="searchInput"
+        placeholder="Search exercises..."
+        oninput="handleSearch(this.value)" />
+    </div>
+
+    <!-- SEARCH RESULTS -->
+    <div class="content">
+      <div class="search-results" id="searchResults">
+        <p class="section-label">Search results</p>
+        <div id="resultsContainer"></div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="mainContent">
+      <div class="content">
+
+        <!-- QUICK EXERCISE -->
+        <p class="section-label" style="margin-top:6px;">Quick exercise</p>
+        <div class="quick-exercise">
+          <div class="quick-top">
+            <span class="quick-badge">📝 Try this one!</span>
+          </div>
+          <div class="quick-body">
+            <div class="quick-q">
+              Choose the correct word: "She <span>___</span> a teacher at a secondary school."
+            </div>
+            <div class="quick-options" id="quickOptions">
+              <button class="quick-opt" onclick="checkAnswer(this, false, 'have')">A) have</button>
+              <button class="quick-opt" onclick="checkAnswer(this, true,  'is'  )">B) is</button>
+              <button class="quick-opt" onclick="checkAnswer(this, false, 'are' )">C) are</button>
+              <button class="quick-opt" onclick="checkAnswer(this, false, 'be'  )">D) be</button>
+            </div>
+            <div class="feedback-box" id="feedbackBox"></div>
+          </div>
+        </div>
+
+        <!-- EXERCISE TYPES -->
+        <p class="section-label">Choose your exercise</p>
+        <div class="exercise-list">
+
+          <a href="quiz-multiple-choice.html" class="exercise-card mc" onclick="navigateTo(event,'quiz-multiple-choice.html')">
+            <div class="exercise-icon">❓</div>
+            <div class="exercise-info">
+              <span class="exercise-name">Multiple Choice</span>
+              <span class="exercise-desc">Choose the correct answer from 4 options</span>
+            </div>
+            <span class="exercise-count">10 questions</span>
+            <span class="exercise-arrow">&#8250;</span>
+          </a>
+
+          <a href="quiz-fill-blanks.html" class="exercise-card fill" onclick="navigateTo(event,'quiz-fill-blanks.html')">
+            <div class="exercise-icon">✏️</div>
+            <div class="exercise-info">
+              <span class="exercise-name">Fill in the Blanks</span>
+              <span class="exercise-desc">Complete the sentence with the right word</span>
+            </div>
+            <span class="exercise-count">8 exercises</span>
+            <span class="exercise-arrow">&#8250;</span>
+          </a>
+
+          <a href="quiz-reading.html" class="exercise-card read" onclick="navigateTo(event,'quiz-reading.html')">
+            <div class="exercise-icon">📄</div>
+            <div class="exercise-info">
+              <span class="exercise-name">Reading Comprehension</span>
+              <span class="exercise-desc">Read a short text and answer questions</span>
+            </div>
+            <span class="exercise-count">5 texts</span>
+            <span class="exercise-arrow">&#8250;</span>
+          </a>
+
+          <a href="quiz-spot-mistake.html" class="exercise-card spot" onclick="navigateTo(event,'quiz-spot-mistake.html')">
+            <div class="exercise-icon">🔍</div>
+            <div class="exercise-info">
+              <span class="exercise-name">Spot the Mistake</span>
+              <span class="exercise-desc">Find the error hidden in the sentence</span>
+            </div>
+            <span class="exercise-count">6 exercises</span>
+            <span class="exercise-arrow">&#8250;</span>
+          </a>
+
+          <div class="exercise-card speak coming-soon">
+            <div class="exercise-icon">🎤</div>
+            <div class="exercise-info">
+              <span class="exercise-name">Speaking Practice</span>
+              <span class="exercise-desc">Say the sentence out loud and get feedback</span>
+            </div>
+            <span class="soon-tag">Coming soon</span>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  <!-- END SCROLL AREA -->
+
+  <!-- BOTTOM BAR — STAYS AT BOTTOM -->
+  <div class="bottom-bar">
+    <a href="index.html" class="bottom-btn" onclick="navigateTo(event,'index.html')">
+      <div class="b-icon">🏠</div>
+      Início
+    </a>
+    <a href="community.html" class="bottom-btn" onclick="navigateTo(event,'community.html')">
+      <div class="b-icon">💬</div>
+      Comunidade
+    </a>
+    <a href="library.html" class="bottom-btn" onclick="navigateTo(event,'library.html')">
+      <div class="b-icon">📚</div>
+      Biblioteca
+    </a>
+    <a href="homework.html" class="bottom-btn" onclick="navigateTo(event,'homework.html')">
+      <div class="b-icon">👨‍🏫</div>
+      Ajuda TPCs
+    </a>
+    <a href="profile.html" class="bottom-btn" onclick="navigateTo(event,'profile.html')">
+      <div class="b-icon">👤</div>
+      Perfil
+    </a>
+  </div>
+
+</div>
+<!-- END APP SHELL -->
+
+  <script>
+    const exercises = [
+      { name: "Multiple Choice", desc: "Choose the correct answer from 4 options", url: "quiz-multiple-choice.html" },
+      { name: "Fill in the Blanks", desc: "Complete the sentence with the right word", url: "quiz-fill-blanks.html" },
+      { name: "Reading Comprehension", desc: "Read a short text and answer questions", url: "quiz-reading.html" },
+      { name: "Spot the Mistake", desc: "Find the error hidden in the sentence", url: "quiz-spot-mistake.html" },
+    ];
+
+    function handleSearch(value) {
+      const sr = document.getElementById('searchResults');
+      const mc = document.getElementById('mainContent');
+      const rc = document.getElementById('resultsContainer');
+      if (!value.trim()) {
+        sr.classList.remove('visible');
+        mc.style.display = 'block';
+        return;
+      }
+      mc.style.display = 'none';
+      sr.classList.add('visible');
+      const filtered = exercises.filter(e =>
+        e.name.toLowerCase().includes(value.toLowerCase()) ||
+        e.desc.toLowerCase().includes(value.toLowerCase())
+      );
+      if (!filtered.length) {
+        rc.innerHTML = '<p class="no-results">No exercises found. Try a different word.</p>';
+        return;
+      }
+      rc.innerHTML = filtered.map(e => `
+        <a href="${e.url}" onclick="navigateTo(event,'${e.url}')" style="
+          display:flex;align-items:center;gap:12px;
+          background:white;border:1px solid var(--border);
+          border-radius:12px;padding:12px 14px;
+          text-decoration:none;color:var(--text);margin-bottom:8px;">
+          <div style="flex:1;">
+            <p style="font-size:0.9rem;font-weight:500;margin:3px 0;">${e.name}</p>
+            <span style="font-size:0.72rem;color:var(--text-muted);">${e.desc}</span>
+          </div>
+          <span style="font-size:1.1rem;color:var(--text-muted);">›</span>
+        </a>`).join('');
+    }
+
+    const correctQuotes = [
+      { emoji: "🎉", text: "Congratulations!" },
+      { emoji: "⭐", text: "Well done!" },
+      { emoji: "🔥", text: "Keep going!" },
+      { emoji: "🏆", text: "You will be a master!" },
+      { emoji: "💪", text: "Brilliant! Keep it up!" },
+      { emoji: "🌟", text: "Excellent work!" },
+    ];
+    const wrongQuotes = [
+      { emoji: "😔", text: "Oops! Better luck next time." },
+      { emoji: "😞", text: "Not this time — try again!" },
+      { emoji: "😟", text: "So close! Review and come back." },
+      { emoji: "🙁", text: "Keep trying — you will get it!" },
+    ];
+
+    function checkAnswer(btn, isCorrect, chosen) {
+      document.querySelectorAll('.quick-opt').forEach(o => o.classList.add('disabled'));
+      const fb = document.getElementById('feedbackBox');
+      if (isCorrect) {
+        btn.classList.add('correct');
+        launchConfetti();
+        const q = correctQuotes[Math.floor(Math.random() * correctQuotes.length)];
+        fb.innerHTML = `
+          <div class="fb-block en-correct">
+            <span class="fb-label">✅ Correct!</span>
+            <p class="fb-text">"She <strong>is</strong> a teacher" uses the verb <strong>To Be</strong>. We use IS with she, he and it.</p>
+          </div>
+          <div class="fb-block pt-correct">
+            <span class="fb-label">✅ Correcto!</span>
+            <p class="fb-text">"She <strong>is</strong> a teacher" usa o verbo <strong>To Be</strong>. Usamos IS com she, he e it.</p>
+          </div>
+          <div class="fb-block motivate">
+            <span class="fb-reaction">${q.emoji}</span>
+            <span class="fb-quote">${q.text}</span>
+          </div>`;
+      } else {
+        btn.classList.add('wrong');
+        document.querySelectorAll('.quick-opt').forEach(o => {
+          if (o.textContent.includes('B)')) o.classList.add('correct');
+        });
+        const q = wrongQuotes[Math.floor(Math.random() * wrongQuotes.length)];
+        fb.innerHTML = `
+          <div class="fb-block en-wrong">
+            <span class="fb-label">❌ Not quite!</span>
+            <p class="fb-text">You chose <strong>${chosen}</strong>. The correct answer is <strong>is</strong>. We use IS with she, he and it.</p>
+          </div>
+          <div class="fb-block pt-wrong">
+            <span class="fb-label">❌ Não foi desta!</span>
+            <p class="fb-text">Escolheste <strong>${chosen}</strong>. A resposta correcta é <strong>is</strong>. Usamos IS com she, he e it.</p>
+          </div>
+          <div class="fb-block motivate">
+            <span class="fb-reaction">${q.emoji}</span>
+            <span class="fb-quote">${q.text}</span>
+          </div>`;
+      }
+      fb.classList.add('show');
+    }
+
+    function launchConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      canvas.style.display = 'block';
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const colours = ['#0D7A6B','#5B47A8','#C8852A','#185FA5','#3B6D11','#FFD580','#A8E6DC'];
+      const pieces = Array.from({length: 120}, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 10 + 5, h: Math.random() * 6 + 3,
+        colour: colours[Math.floor(Math.random() * colours.length)],
+        speed: Math.random() * 4 + 2, angle: Math.random() * 360,
+        spin: Math.random() * 6 - 3, opacity: 1,
+      }));
+      let frame = 0;
+      (function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.y += p.speed; p.angle += p.spin; p.opacity -= 0.008;
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, p.opacity);
+          ctx.translate(p.x + p.w / 2, p.y + p.h / 2);
+          ctx.rotate(p.angle * Math.PI / 180);
+          ctx.fillStyle = p.colour;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+        });
+        if (++frame < 160) requestAnimationFrame(draw);
+        else { ctx.clearRect(0, 0, canvas.width, canvas.height); canvas.style.display = 'none'; }
+      })();
+    }
+
+    function navigateTo(e, url) {
+      e.preventDefault();
+      const shell = document.querySelector('.app-shell');
+      shell.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+      shell.style.opacity = '0';
+      shell.style.transform = 'translateX(-20px)';
+      setTimeout(() => { window.location.href = url; }, 185);
+    }
+    function navigateBack(e, url) {
+      e.preventDefault();
+      const shell = document.querySelector('.app-shell');
+      shell.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+      shell.style.opacity = '0';
+      shell.style.transform = 'translateX(20px)';
+      setTimeout(() => { window.location.href = url; }, 185);
+    }
+    window.addEventListener('pageshow', () => {
+      const shell = document.querySelector('.app-shell');
+      if (shell) { shell.style.opacity = '1'; shell.style.transform = 'translateX(0)'; }
+    });
+  </script>
+
+</body>
+</html>
