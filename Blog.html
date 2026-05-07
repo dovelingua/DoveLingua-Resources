@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="description" content="English Lessons — Everyday English from Teacher Dove. English Dove." />
+  <meta name="theme-color" content="#0D7A6B" />
+  <title>English Lessons | English Dove</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --teal:         #0D7A6B;
+      --teal-dark:    #085048;
+      --teal-light:   #E6F4F1;
+      --gold:         #C8852A;
+      --gold-light:   #FDF3E3;
+      --gold-dark:    #7A4F10;
+      --blue:         #185FA5;
+      --blue-light:   #E6F1FB;
+      --blue-dark:    #0C447C;
+      --green:        #3B6D11;
+      --green-light:  #EAF3DE;
+      --green-dark:   #27500A;
+      --red:          #A32D2D;
+      --red-light:    #FCEBEB;
+      --red-dark:     #791F1F;
+      --purple:       #5B47A8;
+      --purple-light: #EEF0FB;
+      --purple-dark:  #3C3489;
+      --white:        #FFFFFF;
+      --off-white:    #F8F7F4;
+      --text:         #1A1A2E;
+      --text-muted:   #6B7280;
+      --border:       #E5E7EB;
+      --font-head:    'Playfair Display', Georgia, serif;
+      --font-body:    'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* APP SHELL — the whole trick is here */
+    html, body {
+      height: 100%;
+      overflow: hidden; /* NOTHING on body scrolls */
+    }
+    body {
+      font-family: var(--font-body);
+      background: var(--off-white);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      /* 100dvh respects the browser chrome on Android */
+      height: 100dvh;
+    }
+
+    /* PAGE ENTRY ANIMATION — applied to the shell not body */
+    .app-shell {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      overflow: hidden;
+      animation: pageIn 0.3s cubic-bezier(0.4,0,0.2,1) both;
+    }
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateX(24px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== HEADER — flex-shrink 0 means it never shrinks ===== */
+    .page-header {
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 100%);
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 2px 12px rgba(13,122,107,0.3);
+      z-index: 10;
+    }
+    .back-btn {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.28);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; text-decoration: none; color: white;
+      flex-shrink: 0; transition: all 0.2s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.28); }
+    .header-centre { flex: 1; }
+    .header-title {
+      font-family: var(--font-head);
+      font-size: 1.1rem; font-weight: 700; color: white; line-height: 1;
+    }
+    .header-sub {
+      font-size: 0.68rem; color: rgba(255,255,255,0.7);
+      margin-top: 2px; font-weight: 300;
+    }
+    .teacher-label {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 20px; padding: 4px 12px;
+      font-size: 0.7rem; font-weight: 500;
+      color: white; white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* ===== WELCOME TICKER ===== */
+    .welcome-bar {
+      flex-shrink: 0;
+      background: var(--teal-dark);
+      padding: 7px 0; overflow: hidden;
+    }
+    .welcome-ticker {
+      display: inline-block; white-space: nowrap;
+      animation: tickerScroll 28s linear infinite;
+      font-size: 0.78rem; color: rgba(255,255,255,0.72);
+      padding-left: 100%;
+    }
+    @keyframes tickerScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-100%); }
+    }
+
+    /* ===== SCROLL AREA — this is the ONLY thing that scrolls ===== */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* ===== SEARCH ===== */
+    .search-wrap { position: relative; margin: 14px 16px 0; }
+    .search-icon {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.95rem; color: var(--text-muted);
+    }
+    .search-input {
+      width: 100%; padding: 11px 16px 11px 40px;
+      border: 1px solid var(--border); border-radius: 12px;
+      font-family: var(--font-body); font-size: 0.88rem;
+      background: var(--white); color: var(--text);
+      outline: none; transition: border 0.2s;
+    }
+    .search-input:focus { border-color: var(--teal); }
+    .search-input::placeholder { color: var(--text-muted); }
+
+    /* ===== CONTENT ===== */
+    .content { padding: 14px 16px 20px; max-width: 600px; margin: 0 auto; }
+
+    .section-label {
+      font-size: 0.72rem; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 10px;
+    }
+
+    /* ===== RECENT POSTS LIST ===== */
+    .post-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .post-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+      text-decoration: none; color: var(--text);
+      display: flex; align-items: stretch;
+      transition: all 0.22s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      animation: fadeUp 0.35s ease both;
+    }
+    .post-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.09); }
+    .post-card:active { transform: scale(0.98); }
+    .post-accent { width: 4px; flex-shrink: 0; }
+    .post-body { padding: 11px 13px; flex: 1; }
+    .post-cat-tag {
+      font-size: 0.66rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.07em;
+      margin-bottom: 3px; display: block;
+    }
+    .post-card h3 {
+      font-size: 0.9rem; font-weight: 500;
+      line-height: 1.35; margin-bottom: 7px; color: var(--text);
+    }
+    .post-meta-row {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .level-badge {
+      font-size: 0.64rem; font-weight: 500; padding: 2px 8px; border-radius: 20px;
+    }
+    .badge-beginner     { background: var(--teal-light); color: var(--teal-dark); }
+    .badge-intermediate { background: var(--blue-light); color: var(--blue-dark); }
+    .post-time { font-size: 0.68rem; color: var(--text-muted); }
+    .post-arrow {
+      font-size: 1.1rem; color: var(--text-muted);
+      padding: 0 12px; display: flex; align-items: center; flex-shrink: 0;
+    }
+
+    /* ===== CATEGORY GRID ===== */
+    .cat-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 8px; margin-bottom: 16px;
+    }
+    .cat-grid-btn {
+      border-radius: 12px; padding: 12px 14px;
+      text-decoration: none; display: flex;
+      flex-direction: row; align-items: center; gap: 10px;
+      transition: all 0.22s; animation: fadeUp 0.35s ease both;
+    }
+    .cat-grid-btn:active { transform: scale(0.97); }
+    .cat-grid-btn:hover  { filter: brightness(0.94); transform: translateY(-1px); }
+    .cat-grid-btn.grammar  { background: var(--blue-light); }
+    .cat-grid-btn.speaking { background: var(--gold-light); }
+    .cat-grid-btn.vocab    { background: var(--green-light); }
+    .cat-grid-btn.tips     { background: var(--teal-light); }
+    .cat-grid-btn.mistakes { background: var(--red-light); }
+    .cat-grid-btn.pronun   { background: var(--purple-light); }
+    .cat-grid-icon {
+      width: 34px; height: 34px; border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem; background: rgba(255,255,255,0.65); flex-shrink: 0;
+    }
+    .cat-grid-text { flex: 1; }
+    .cat-grid-name  { font-size: 0.82rem; font-weight: 600; line-height: 1.2; display: block; }
+    .cat-grid-count { font-size: 0.66rem; font-weight: 500; display: block; margin-top: 2px; }
+    .cat-grid-btn.grammar  .cat-grid-name  { color: var(--blue-dark); }
+    .cat-grid-btn.speaking .cat-grid-name  { color: var(--gold-dark); }
+    .cat-grid-btn.vocab    .cat-grid-name  { color: var(--green-dark); }
+    .cat-grid-btn.tips     .cat-grid-name  { color: var(--teal-dark); }
+    .cat-grid-btn.mistakes .cat-grid-name  { color: var(--red-dark); }
+    .cat-grid-btn.pronun   .cat-grid-name  { color: var(--purple-dark); }
+    .cat-grid-btn.grammar  .cat-grid-count { color: var(--blue); }
+    .cat-grid-btn.speaking .cat-grid-count { color: var(--gold); }
+    .cat-grid-btn.vocab    .cat-grid-count { color: var(--green); }
+    .cat-grid-btn.tips     .cat-grid-count { color: var(--teal); }
+    .cat-grid-btn.mistakes .cat-grid-count { color: var(--red); }
+    .cat-grid-btn.pronun   .cat-grid-count { color: var(--purple); }
+    .cat-grid-btn:nth-child(1) { animation-delay: 0.05s; }
+    .cat-grid-btn:nth-child(2) { animation-delay: 0.10s; }
+    .cat-grid-btn:nth-child(3) { animation-delay: 0.15s; }
+    .cat-grid-btn:nth-child(4) { animation-delay: 0.20s; }
+    .cat-grid-btn:nth-child(5) { animation-delay: 0.25s; }
+    .cat-grid-btn:nth-child(6) { animation-delay: 0.30s; }
+
+    /* ===== SEARCH RESULTS ===== */
+    .search-results { display: none; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .search-results.visible { display: flex; }
+    .no-results { text-align: center; padding: 24px; color: var(--text-muted); font-size: 0.9rem; }
+
+    /* ===== BOTTOM BAR — flex-shrink 0 means it never shrinks or moves ===== */
+    .bottom-bar {
+      flex-shrink: 0;
+      background: var(--white);
+      border-top: 1.5px solid var(--border);
+      display: flex; align-items: center;
+      justify-content: space-around;
+      padding: 8px 0;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.08);
+      z-index: 10;
+    }
+    .bottom-btn {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      background: none; border: none; cursor: pointer; color: var(--text-muted);
+      font-family: var(--font-body); font-size: 0.58rem; font-weight: 600;
+      padding: 4px 8px; border-radius: 12px; transition: all 0.2s;
+      text-decoration: none; min-width: 54px;
+    }
+    .bottom-btn .b-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; transition: all 0.2s;
+    }
+    .bottom-btn.active { color: var(--teal); }
+    .bottom-btn.active .b-icon { background: var(--teal-light); }
+    .bottom-btn:hover { color: var(--teal); }
+    .bottom-btn:hover .b-icon { background: var(--teal-light); }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- HEADER — STAYS AT TOP -->
+  <div class="page-header">
+    <a href="index.html" class="back-btn" onclick="navigateBack(event,'index.html')">&#8592;</a>
+    <div class="header-centre">
+      <div class="header-title">📖English Lessons</div>
+      <div class="header-sub">Aulas de Inglês - DoveLingua</div>
+    </div>
+    <div class="teacher-label">👨‍🏫 Teacher Dove</div>
+  </div>
+
+  <!-- WELCOME TICKER — STAYS BELOW HEADER -->
+  <div class="welcome-bar">
+    <span class="welcome-ticker">
+      🕊️ Bem-vindo! Aqui encontras lições simples e práticas para o teu dia a dia em Inglês. Escolhe uma categoria e começa já! &nbsp;&nbsp;&nbsp;&nbsp;
+      🕊️ Bem-vindo! Aqui encontras lições simples e práticas para o teu dia a dia em Inglês. Escolhe uma categoria e começa já!
+    </span>
+  </div>
+
+  <!-- SCROLL AREA — ONLY THIS PART SCROLLS -->
+  <div class="scroll-area">
+
+    <!-- SEARCH -->
+    <div class="search-wrap">
+      <span class="search-icon">&#128269;</span>
+      <input type="text" class="search-input" id="searchInput"
+        placeholder="Search lessons, tips, topics..."
+        oninput="handleSearch(this.value)" />
+    </div>
+
+    <!-- SEARCH RESULTS -->
+    <div class="content">
+      <div class="search-results" id="searchResults">
+        <p class="section-label">Search results</p>
+        <div id="resultsContainer"></div>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="mainContent">
+      <div class="content">
+
+        <p class="section-label" style="margin-top:6px;">Recent posts</p>
+        <div class="post-list">
+
+          <a href="tips.html" class="post-card" onclick="navigateTo(event,'tips.html')">
+            <div class="post-accent" style="background:var(--teal);"></div>
+            <div class="post-body">
+              <span class="post-cat-tag" style="color:var(--teal);">Everyday Tips</span>
+              <h3>How to greet people in English</h3>
+              <div class="post-meta-row">
+                <span class="level-badge badge-beginner">Beginner</span>
+                <span class="post-time">&#128337; 3 min</span>
+              </div>
+            </div>
+            <span class="post-arrow">&#8250;</span>
+          </a>
+
+          <a href="vocabulary.html" class="post-card" onclick="navigateTo(event,'vocabulary.html')">
+            <div class="post-accent" style="background:var(--green);"></div>
+            <div class="post-body">
+              <span class="post-cat-tag" style="color:var(--green);">Vocabulary</span>
+              <h3>10 useful phrases for beginners</h3>
+              <div class="post-meta-row">
+                <span class="level-badge badge-beginner">Beginner</span>
+                <span class="post-time">&#128337; 4 min</span>
+              </div>
+            </div>
+            <span class="post-arrow">&#8250;</span>
+          </a>
+
+          <a href="mistakes.html" class="post-card" onclick="navigateTo(event,'mistakes.html')">
+            <div class="post-accent" style="background:var(--red);"></div>
+            <div class="post-body">
+              <span class="post-cat-tag" style="color:var(--red);">Common Mistakes</span>
+              <h3>Common errors when speaking English</h3>
+              <div class="post-meta-row">
+                <span class="level-badge badge-beginner">Beginner</span>
+                <span class="post-time">&#128337; 5 min</span>
+              </div>
+            </div>
+            <span class="post-arrow">&#8250;</span>
+          </a>
+
+          <a href="lesson-am-vs-have.html" class="post-card" onclick="navigateTo(event,'lesson-am-vs-have.html')">
+            <div class="post-accent" style="background:var(--blue);"></div>
+            <div class="post-body">
+              <span class="post-cat-tag" style="color:var(--blue);">Grammar</span>
+              <h3>I AM vs I HAVE: What is the real difference?</h3>
+              <div class="post-meta-row">
+                <span class="level-badge badge-beginner">Beginner</span>
+                <span class="post-time">&#128337; 5 min</span>
+              </div>
+            </div>
+            <span class="post-arrow">&#8250;</span>
+          </a>
+
+        </div>
+
+        <p class="section-label">Explore by category</p>
+        <div class="cat-grid">
+
+          <a href="grammar.html" class="cat-grid-btn grammar" onclick="navigateTo(event,'grammar.html')">
+            <div class="cat-grid-icon">&#128216;</div>
+            <div class="cat-grid-text">
+              <span class="cat-grid-name">Grammar</span>
+              <span class="cat-grid-count">5 lessons</span>
+            </div>
+          </a>
+
+          <a href="speaking.html" class="cat-grid-btn speaking" onclick="navigateTo(event,'speaking.html')">
+            <div class="cat-grid-icon">&#128483;</div>
+            <div class="cat-grid-text">
+              <span class="cat-grid-name">Speaking</span>
+              <span class="cat-grid-count">4 lessons</span>
+            </div>
+          </a>
+
+          <a href="vocabulary.html" class="cat-grid-btn vocab" onclick="navigateTo(event,'vocabulary.html')">
+            <div class="cat-grid-icon">&#128218;</div>
+            <div class="cat-grid-text">
+              <span class="cat-grid-name">Vocabulary</span>
+              <span class="cat-grid-count">6 lessons</span>
+            </div>
+          </a>
+
+          <a href="tips.html" class="cat-grid-btn tips" onclick="navigateTo(event,'tips.html')">
+            <div class="cat-grid-icon">&#128161;</div>
+            <div class="cat-grid-text">
+              <span class="cat-grid-name">Everyday Tips</span>
+              <span class="cat-grid-count">5 lessons</span>
+            </div>
+          </a>
+
+          <a href="mistakes.html" class="cat-grid-btn mistakes" onclick="navigateTo(event,'mistakes.html')">
+            <div class="cat-grid-icon">&#9888;</div>
+            <div class="cat-grid-text">
+              <span class="cat-grid-name">Common Mistakes</span>
+              <span class="cat-grid-count">4 lessons</span>
+            </div>
+          </a>
+
+          <a href="pronunciation.html" class="cat-grid-btn pronun" onclick="navigateTo(event,'pronunciation.html')">
+            <div class="cat-grid-icon">&#127908;</div>
+            <div class="cat-grid-text">
+              <span class="cat-grid-name">Pronunciation</span>
+              <span class="cat-grid-count">3 lessons</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- END SCROLL AREA -->
+
+  <!-- BOTTOM BAR — STAYS AT BOTTOM -->
+  <div class="bottom-bar">
+    <a href="index.html" class="bottom-btn" onclick="navigateTo(event,'index.html')">
+      <div class="b-icon">🏠</div>
+      Início
+    </a>
+    <a href="community.html" class="bottom-btn" onclick="navigateTo(event,'community.html')">
+      <div class="b-icon">💬</div>
+      Comunidade
+    </a>
+    <a href="library.html" class="bottom-btn" onclick="navigateTo(event,'library.html')">
+      <div class="b-icon">📚</div>
+      Biblioteca
+    </a>
+    <a href="homework.html" class="bottom-btn" onclick="navigateTo(event,'homework.html')">
+      <div class="b-icon">👨‍🏫</div>
+      Ajuda TPCs
+    </a>
+    <a href="profile.html" class="bottom-btn" onclick="navigateTo(event,'profile.html')">
+      <div class="b-icon">👤</div>
+      Perfil
+    </a>
+  </div>
+
+</div>
+<!-- END APP SHELL -->
+
+  <script>
+    const allPosts = [
+      { title: "How to greet people in English", category: "Everyday Tips", level: "Beginner", time: "3 min", url: "tips.html" },
+      { title: "10 useful phrases for beginners", category: "Vocabulary", level: "Beginner", time: "4 min", url: "vocabulary.html" },
+      { title: "Common errors when speaking English", category: "Common Mistakes", level: "Beginner", time: "5 min", url: "mistakes.html" },
+      { title: "How to introduce yourself in English", category: "Speaking", level: "Beginner", time: "4 min", url: "speaking.html" },
+      { title: "I AM vs I HAVE: What is the real difference?", category: "Grammar", level: "Beginner", time: "5 min", url: "lesson-am-vs-have.html" },
+    ];
+
+    function handleSearch(value) {
+      const sr = document.getElementById('searchResults');
+      const mc = document.getElementById('mainContent');
+      const rc = document.getElementById('resultsContainer');
+      if (!value.trim()) {
+        sr.classList.remove('visible');
+        mc.style.display = 'block';
+        return;
+      }
+      mc.style.display = 'none';
+      sr.classList.add('visible');
+      const filtered = allPosts.filter(p =>
+        p.title.toLowerCase().includes(value.toLowerCase()) ||
+        p.category.toLowerCase().includes(value.toLowerCase())
+      );
+      if (!filtered.length) {
+        rc.innerHTML = '<p class="no-results">No lessons found. Try a different word.</p>';
+        return;
+      }
+      rc.innerHTML = filtered.map(p => `
+        <a href="${p.url}" onclick="navigateTo(event,'${p.url}')" style="
+          display:flex;align-items:center;gap:12px;
+          background:white;border:1px solid var(--border);
+          border-radius:12px;padding:12px 14px;
+          text-decoration:none;color:var(--text);margin-bottom:8px;">
+          <div style="flex:1;">
+            <span style="font-size:0.68rem;font-weight:600;color:var(--teal);text-transform:uppercase;">${p.category}</span>
+            <p style="font-size:0.9rem;font-weight:500;margin:3px 0;">${p.title}</p>
+            <div style="display:flex;justify-content:space-between;">
+              <span style="font-size:0.68rem;color:var(--text-muted);">${p.level}</span>
+              <span style="font-size:0.68rem;color:var(--text-muted);">&#128337; ${p.time}</span>
+            </div>
+          </div>
+          <span style="font-size:1.1rem;color:var(--text-muted);">›</span>
+        </a>`).join('');
+    }
+
+    function navigateTo(e, url) {
+      e.preventDefault();
+      const shell = document.querySelector('.app-shell');
+      shell.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+      shell.style.opacity = '0';
+      shell.style.transform = 'translateX(-20px)';
+      setTimeout(() => { window.location.href = url; }, 185);
+    }
+    function navigateBack(e, url) {
+      e.preventDefault();
+      const shell = document.querySelector('.app-shell');
+      shell.style.transition = 'opacity 0.18s ease, transform 0.18s ease';
+      shell.style.opacity = '0';
+      shell.style.transform = 'translateX(20px)';
+      setTimeout(() => { window.location.href = url; }, 185);
+    }
+    window.addEventListener('pageshow', () => {
+      const shell = document.querySelector('.app-shell');
+      if (shell) { shell.style.opacity = '1'; shell.style.transform = 'translateX(0)'; }
+    });
+  </script>
+</body>
+</html>
