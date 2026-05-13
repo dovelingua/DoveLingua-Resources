@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Enrol Now — DoveLingua English Learning Academy</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --navy: #0D1B2A; --deep: #1A2E45; --teal: #0E7C7B;
+      --teal-light: #14A89A; --gold: #C9A84C; --gold-light: #E8C766;
+      --cream: #F9F5EF; --white: #FFFFFF; --gray: #6B7A8D;
+      --light-gray: #E8EDF2; --red: #e74c3c; --green: #27ae60;
+      --radius: 16px; --radius-sm: 10px;
+      --shadow: 0 8px 40px rgba(13,27,42,0.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--navy); min-height: 100vh; }
+
+    nav { background: var(--white); height: 64px; display: flex; align-items: center; padding: 0 1.5rem; box-shadow: 0 2px 16px rgba(13,27,42,0.08); position: sticky; top: 0; z-index: 100; }
+    .nav-inner { max-width: 1100px; margin: 0 auto; width: 100%; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 0.5rem; text-decoration: none; }
+    .logo span { color: var(--teal); }
+    .back-link { font-size: 0.85rem; color: var(--teal); font-weight: 600; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+
+    .page-header { background: linear-gradient(135deg, var(--navy) 0%, var(--deep) 100%); color: white; text-align: center; padding: 3.5rem 1.5rem 4rem; position: relative; overflow: hidden; }
+    .page-header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 30% 50%, rgba(14,124,123,0.2) 0%, transparent 60%); }
+    .page-header-content { position: relative; z-index: 1; }
+    .page-tag { display: inline-block; background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3); color: var(--gold-light); font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 0.4rem 1rem; border-radius: 20px; margin-bottom: 1.25rem; }
+    .page-header h1 { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; line-height: 1.15; margin-bottom: 0.75rem; }
+    .page-header h1 span { color: var(--gold-light); }
+    .page-header p { font-size: 1rem; color: rgba(255,255,255,0.7); max-width: 520px; margin: 0 auto; line-height: 1.65; }
+
+    .steps-bar { background: var(--white); border-bottom: 1px solid var(--light-gray); padding: 1.1rem 1.5rem; position: sticky; top: 64px; z-index: 90; }
+    .steps-inner { max-width: 700px; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+    .step { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; flex: 1; position: relative; }
+    .step:not(:last-child)::after { content: ''; position: absolute; top: 14px; left: 60%; right: -40%; height: 2px; background: var(--light-gray); z-index: 0; transition: background 0.4s; }
+    .step.done:not(:last-child)::after { background: var(--teal); }
+    .step-circle { width: 28px; height: 28px; border-radius: 50%; background: var(--light-gray); color: var(--gray); font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; transition: all 0.3s; }
+    .step.active .step-circle { background: var(--teal); color: white; }
+    .step.done .step-circle { background: var(--green); color: white; }
+    .step-label { font-size: 0.68rem; font-weight: 600; color: var(--gray); text-align: center; }
+    .step.active .step-label { color: var(--teal); }
+    .step.done .step-label { color: var(--green); }
+
+    .main-wrap { max-width: 1000px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: start; }
+    @media(max-width:760px) { .main-wrap { grid-template-columns: 1fr; } .sidebar { order: -1; } }
+
+    .form-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .form-section { display: none; padding: 2rem; animation: fadeIn 0.35s ease; }
+    .form-section.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+    .form-section-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--navy); margin-bottom: 0.4rem; }
+    .form-section-sub { font-size: 0.83rem; color: var(--gray); margin-bottom: 1.75rem; line-height: 1.5; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-row.full { grid-template-columns: 1fr; }
+    @media(max-width:500px) { .form-row { grid-template-columns: 1fr; } }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-label { font-size: 0.8rem; font-weight: 600; color: var(--navy); }
+    .required { color: var(--red); margin-left: 2px; }
+    .form-input, .form-select { padding: 0.75rem 1rem; border: 2px solid var(--light-gray); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.9rem; color: var(--navy); background: var(--white); outline: none; transition: border-color 0.2s; width: 100%; }
+    .form-input:focus, .form-select:focus { border-color: var(--teal); }
+    .form-input.error, .form-select.error { border-color: var(--red); }
+    .field-error { font-size: 0.75rem; color: var(--red); display: none; }
+    .field-error.show { display: block; }
+
+    .level-selector { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(180px,100%), 1fr)); gap: 0.75rem; margin-top: 0.5rem; }
+    .level-option { border: 2px solid var(--light-gray); border-radius: var(--radius-sm); padding: 1rem; cursor: pointer; transition: all 0.25s; }
+    .level-option:hover { border-color: var(--teal); background: rgba(14,124,123,0.03); }
+    .level-option.selected { border-color: var(--teal); background: rgba(14,124,123,0.07); }
+    .level-option-badge { display: inline-block; background: var(--navy); color: var(--gold-light); font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-bottom: 0.5rem; }
+    .level-option-name { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: var(--navy); margin-bottom: 0.2rem; }
+    .level-option-price { font-size: 0.82rem; font-weight: 700; color: var(--teal); }
+    .level-option-desc { font-size: 0.73rem; color: var(--gray); margin-top: 0.3rem; line-height: 1.4; }
+
+    .form-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 2rem; border-top: 1px solid var(--light-gray); background: var(--cream); }
+    .btn-back { background: none; border: 2px solid var(--light-gray); border-radius: 50px; padding: 0.7rem 1.5rem; font-family: inherit; font-size: 0.88rem; font-weight: 600; color: var(--gray); cursor: pointer; transition: all 0.2s; }
+    .btn-back:hover { border-color: var(--navy); color: var(--navy); }
+    .btn-next { background: linear-gradient(135deg, var(--teal), var(--teal-light)); color: white; border: none; border-radius: 50px; padding: 0.75rem 2rem; font-family: inherit; font-size: 0.92rem; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 20px rgba(14,124,123,0.3); display: flex; align-items: center; gap: 0.5rem; }
+    .btn-next:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(14,124,123,0.4); }
+
+    .sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
+    .price-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .price-card-header { background: linear-gradient(135deg, var(--navy), var(--deep)); color: white; padding: 1.25rem 1.5rem; }
+    .price-card-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .price-card-level { font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+    .price-card-body { padding: 1.25rem 1.5rem; }
+    .price-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; font-size: 0.87rem; border-bottom: 1px solid var(--light-gray); }
+    .price-row:last-of-type { border-bottom: none; }
+    .price-row-label { color: var(--gray); }
+    .price-row-val { font-weight: 600; color: var(--navy); }
+    .price-total { background: rgba(14,124,123,0.07); border-radius: var(--radius-sm); padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; margin-top: 0.75rem; }
+    .price-total-label { font-weight: 700; font-size: 0.9rem; color: var(--navy); }
+    .price-total-val { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; color: var(--teal); }
+    .price-placeholder { text-align: center; padding: 1.5rem; color: var(--gray); font-size: 0.82rem; line-height: 1.6; }
+    .info-card { background: var(--white); border-radius: var(--radius); padding: 1.25rem 1.5rem; box-shadow: 0 4px 16px rgba(13,27,42,0.06); }
+    .info-card-title { font-weight: 700; font-size: 0.85rem; color: var(--navy); margin-bottom: 0.75rem; }
+    .info-item { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.8rem; color: var(--gray); line-height: 1.5; margin-bottom: 0.5rem; }
+    .info-item .dot { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+
+    .payment-method-tabs { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .pay-tab { flex: 1; border: 2px solid var(--light-gray); border-radius: var(--radius-sm); padding: 0.9rem 0.75rem; cursor: pointer; text-align: center; transition: all 0.25s; }
+    .pay-tab.selected { border-color: var(--teal); background: rgba(14,124,123,0.06); }
+    .pay-tab-icon { font-size: 1.4rem; margin-bottom: 0.3rem; }
+    .pay-tab-name { font-weight: 700; font-size: 0.82rem; color: var(--navy); }
+    .pay-tab-sub { font-size: 0.7rem; color: var(--gray); }
+    .payment-instructions { display: none; animation: fadeIn 0.3s ease; }
+    .payment-instructions.show { display: block; }
+    .instruction-title { font-weight: 700; font-size: 0.9rem; color: var(--navy); margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--light-gray); }
+    .step-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .step-item { display: flex; gap: 0.75rem; align-items: flex-start; }
+    .step-num { width: 24px; height: 24px; background: var(--teal); color: white; border-radius: 50%; font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .step-text { font-size: 0.85rem; color: var(--navy); line-height: 1.5; }
+    .step-text strong { color: var(--teal); }
+    .ref-box { background: var(--navy); color: white; border-radius: var(--radius-sm); padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+    .ref-label { font-size: 0.73rem; color: rgba(255,255,255,0.5); margin-bottom: 0.2rem; }
+    .ref-number { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--gold-light); font-weight: 700; letter-spacing: 2px; }
+    .copy-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; padding: 0.4rem 0.9rem; font-size: 0.75rem; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .copy-btn:hover { background: rgba(255,255,255,0.2); }
+    .timer-box { background: rgba(201,168,76,0.1); border: 1px solid rgba(201,168,76,0.3); border-radius: var(--radius-sm); padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1.25rem; font-size: 0.82rem; color: var(--navy); }
+    .timer-val { font-weight: 700; color: var(--gold); }
+    .upload-area { border: 2px dashed var(--light-gray); border-radius: var(--radius-sm); padding: 1.5rem; text-align: center; cursor: pointer; transition: all 0.25s; margin-bottom: 1.25rem; position: relative; }
+    .upload-area:hover { border-color: var(--teal); background: rgba(14,124,123,0.03); }
+    .upload-area input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .upload-label { font-size: 0.85rem; font-weight: 600; color: var(--navy); margin-bottom: 0.2rem; }
+    .upload-sub { font-size: 0.75rem; color: var(--gray); }
+    .upload-preview { font-size: 0.8rem; color: var(--green); font-weight: 600; margin-top: 0.5rem; }
+
+    .confirmation { display: none; text-align: center; padding: 3rem 2rem; animation: fadeIn 0.4s ease; }
+    .confirmation.show { display: block; }
+    .confirm-icon { font-size: 4rem; margin-bottom: 1.25rem; animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both; display: block; }
+    @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .confirm-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--navy); margin-bottom: 0.75rem; }
+    .confirm-desc { font-size: 0.9rem; color: var(--gray); line-height: 1.7; max-width: 420px; margin: 0 auto 2rem; }
+    .confirm-details { background: var(--cream); border-radius: var(--radius-sm); padding: 1.25rem; text-align: left; margin-bottom: 1.5rem; max-width: 420px; margin-left: auto; margin-right: auto; }
+    .confirm-detail-row { display: flex; justify-content: space-between; font-size: 0.83rem; padding: 0.4rem 0; border-bottom: 1px solid var(--light-gray); }
+    .confirm-detail-row:last-child { border: none; }
+    .confirm-detail-label { color: var(--gray); font-weight: 600; }
+    .confirm-detail-val { font-weight: 500; color: var(--navy); }
+    .confirm-actions { display: flex; flex-direction: column; align-items: center; gap: 0.85rem; }
+    .btn-pdf { display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, var(--teal), var(--teal-light)); color: white; border: none; border-radius: 50px; padding: 0.85rem 1.75rem; font-family: inherit; font-size: 0.92rem; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 6px 20px rgba(14,124,123,0.3); }
+    .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(14,124,123,0.4); }
+    .whatsapp-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: #25D366; color: white; border: none; border-radius: 50px; padding: 0.85rem 1.75rem; font-family: inherit; font-size: 0.92rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s; box-shadow: 0 6px 20px rgba(37,211,102,0.3); }
+    .whatsapp-btn:hover { transform: translateY(-2px); }
+    .check-payment-btn { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--gold); color: var(--navy); border: none; border-radius: 50px; padding: 0.85rem 1.75rem; font-family: inherit; font-size: 0.92rem; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.3s; box-shadow: 0 6px 20px rgba(201,168,76,0.3); }
+    .check-payment-btn:hover { transform: translateY(-2px); background: var(--gold-light); }
+    .email-status { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: var(--gray); background: var(--light-gray); border-radius: 20px; padding: 0.35rem 0.9rem; margin-bottom: 1.5rem; }
+    .email-status.sent { background: rgba(39,174,96,0.1); color: var(--green); }
+    .email-status.failed { background: rgba(231,76,60,0.1); color: var(--red); }
+
+    .loading-overlay { display: none; position: fixed; inset: 0; background: rgba(13,27,42,0.6); z-index: 9000; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; backdrop-filter: blur(4px); }
+    .loading-overlay.show { display: flex; }
+    .spinner { width: 48px; height: 48px; border: 4px solid rgba(255,255,255,0.2); border-top-color: var(--teal-light); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: white; font-size: 0.9rem; font-weight: 500; }
+    .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--navy); color: white; padding: 0.85rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 500; z-index: 9999; transform: translateY(20px); opacity: 0; transition: all 0.3s; max-width: 320px; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-left: 4px solid var(--green); }
+    .toast.error   { border-left: 4px solid var(--red); }
+    .toast.info    { border-left: 4px solid var(--teal); }
+    @media(max-width:500px) { .form-section { padding: 1.5rem 1rem; } .form-nav { padding: 1rem; } }
+  </style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Submitting your enrolment...</div>
+</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">🕊️ Dove<span>Lingua</span></a>
+    <a href="index.html" class="back-link">← Back to Home</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="page-header-content">
+    <div class="page-tag">📝 Enrolment</div>
+    <h1>Join <span>DoveLingua</span></h1>
+    <p>Complete the form, choose your level and pay securely. Your English journey starts here. 🕊️</p>
+  </div>
+</div>
+
+<div class="steps-bar">
+  <div class="steps-inner">
+    <div class="step active" id="step1-ind"><div class="step-circle">1</div><div class="step-label">Your Info</div></div>
+    <div class="step" id="step2-ind"><div class="step-circle">2</div><div class="step-label">Choose Level</div></div>
+    <div class="step" id="step3-ind"><div class="step-circle">3</div><div class="step-label">Payment</div></div>
+    <div class="step" id="step4-ind"><div class="step-circle">✓</div><div class="step-label">Confirmed</div></div>
+  </div>
+</div>
+
+<div class="main-wrap">
+  <div class="form-card">
+
+    <!-- STEP 1 -->
+    <div class="form-section active" id="section1">
+      <div class="form-section-title">👤 Your Personal Information</div>
+      <div class="form-section-sub">Fill in your details accurately. These will appear on your student record and certificate.</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Full Name <span class="required">*</span></label><input type="text" class="form-input" id="f_name" placeholder="e.g. Ana Maúngue" /><span class="field-error" id="err_name">Please enter your full name.</span></div>
+        <div class="form-group"><label class="form-label">Age <span class="required">*</span></label><input type="number" class="form-input" id="f_age" placeholder="e.g. 22" min="8" max="80" /><span class="field-error" id="err_age">Please enter a valid age (8–80).</span></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Gender <span class="required">*</span></label><select class="form-select" id="f_gender"><option value="">Select gender</option><option>Female</option><option>Male</option><option>Prefer not to say</option></select><span class="field-error" id="err_gender">Please select your gender.</span></div>
+        <div class="form-group"><label class="form-label">Phone Number <span class="required">*</span></label><input type="tel" class="form-input" id="f_phone" placeholder="e.g. +258 84 000 0000" /><span class="field-error" id="err_phone">Please enter a valid phone number.</span></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">WhatsApp Number <span class="required">*</span></label><input type="tel" class="form-input" id="f_whatsapp" placeholder="e.g. +258 84 000 0000" /><span class="field-error" id="err_whatsapp">Please enter your WhatsApp number.</span></div>
+        <div class="form-group"><label class="form-label">Email Address</label><input type="email" class="form-input" id="f_email" placeholder="e.g. ana@email.com" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Country <span class="required">*</span></label><input type="text" class="form-input" id="f_country" placeholder="e.g. Mozambique" /><span class="field-error" id="err_country">Please enter your country.</span></div>
+        <div class="form-group"><label class="form-label">Province / State <span class="required">*</span></label><input type="text" class="form-input" id="f_province" placeholder="e.g. Maputo" /><span class="field-error" id="err_province">Please enter your province.</span></div>
+      </div>
+      <div class="form-row full">
+        <div class="form-group"><label class="form-label">City / District <span class="required">*</span></label><input type="text" class="form-input" id="f_city" placeholder="e.g. Matola" /><span class="field-error" id="err_city">Please enter your city.</span></div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="form-section" id="section2">
+      <div class="form-section-title">📚 Choose Your Level</div>
+      <div class="form-section-sub">Select the level that matches your current English. Not sure? Message Teacher Dove on WhatsApp.</div>
+      <div class="level-selector" id="levelSelector"></div>
+      <span class="field-error" id="err_level" style="margin-top:0.5rem;">Please select a level to continue.</span>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="form-section" id="section3">
+      <div class="form-section-title">💳 Payment</div>
+      <div class="form-section-sub">Choose your payment method, follow the steps carefully and upload your proof of payment.</div>
+      <div class="payment-method-tabs">
+        <div class="pay-tab selected" id="tab_mpesa" onclick="selectPayMethod('mpesa')"><div class="pay-tab-icon">📱</div><div class="pay-tab-name">M-Pesa</div><div class="pay-tab-sub">Vodacom</div></div>
+        <div class="pay-tab" id="tab_emola" onclick="selectPayMethod('emola')"><div class="pay-tab-icon">📱</div><div class="pay-tab-name">e-Mola</div><div class="pay-tab-sub">Movitel</div></div>
+      </div>
+      <div class="ref-box">
+        <div><div class="ref-label">Your Unique Payment Reference</div><div class="ref-number" id="refNumber">DVL-000000</div></div>
+        <button class="copy-btn" onclick="copyRef()">📋 Copy</button>
+      </div>
+      <div class="timer-box"><span>⏱️</span><span>Complete payment within <span class="timer-val" id="timerDisplay">30:00</span></span></div>
+      <div class="payment-instructions show" id="inst_mpesa">
+        <div class="instruction-title">📱 M-Pesa Steps (Vodacom)</div>
+        <div class="step-list">
+          <div class="step-item"><div class="step-num">1</div><div class="step-text">Open your phone — go to <strong>M-Pesa</strong> menu.</div></div>
+          <div class="step-item"><div class="step-num">2</div><div class="step-text">Select <strong>"Enviar Dinheiro"</strong> (Send Money).</div></div>
+          <div class="step-item"><div class="step-num">3</div><div class="step-text">Enter number: <strong>+258 84 892 0143</strong> — Gildo Dove (DoveLingua).</div></div>
+          <div class="step-item"><div class="step-num">4</div><div class="step-text">Enter exact amount: <strong id="mpesa_amount">—</strong> MZN.</div></div>
+          <div class="step-item"><div class="step-num">5</div><div class="step-text">Reference field: <strong id="mpesa_ref">—</strong></div></div>
+          <div class="step-item"><div class="step-num">6</div><div class="step-text">Confirm with PIN. Take a <strong>screenshot</strong>.</div></div>
+          <div class="step-item"><div class="step-num">7</div><div class="step-text">Upload your screenshot below ⬇️</div></div>
+        </div>
+      </div>
+      <div class="payment-instructions" id="inst_emola">
+        <div class="instruction-title">📱 e-Mola Steps (Movitel)</div>
+        <div class="step-list">
+          <div class="step-item"><div class="step-num">1</div><div class="step-text">Open your phone — go to <strong>e-Mola</strong> menu.</div></div>
+          <div class="step-item"><div class="step-num">2</div><div class="step-text">Select <strong>"Transferência"</strong> (Transfer).</div></div>
+          <div class="step-item"><div class="step-num">3</div><div class="step-text">Enter number: <strong>+258 86 580 4379</strong> — Gildo Dove (DoveLingua).</div></div>
+          <div class="step-item"><div class="step-num">4</div><div class="step-text">Enter exact amount: <strong id="emola_amount">—</strong> MZN.</div></div>
+          <div class="step-item"><div class="step-num">5</div><div class="step-text">Reference field: <strong id="emola_ref">—</strong></div></div>
+          <div class="step-item"><div class="step-num">6</div><div class="step-text">Confirm with PIN. Take a <strong>screenshot</strong>.</div></div>
+          <div class="step-item"><div class="step-num">7</div><div class="step-text">Upload your screenshot below ⬇️</div></div>
+        </div>
+      </div>
+      <div class="upload-area" id="uploadArea">
+        <input type="file" id="proofFile" accept="image/*,.pdf" onchange="handleUpload(this)" />
+        <div class="upload-icon">📸</div>
+        <div class="upload-label">Upload Proof of Payment</div>
+        <div class="upload-sub">Tap to choose your screenshot (JPG, PNG or PDF)</div>
+        <div class="upload-preview" id="uploadPreview"></div>
+      </div>
+      <span class="field-error" id="err_proof">Please upload your proof of payment before submitting.</span>
+    </div>
+
+    <!-- STEP 4: Confirmation -->
+    <div class="form-section" id="section4">
+      <div class="confirmation show">
+        <span class="confirm-icon">✅</span>
+        <div class="confirm-title">Enrolment Submitted!</div>
+        <div class="confirm-desc">Thank you, <strong id="confirm_name">—</strong>! Your enrolment has been received. Teacher Dove will verify your payment and confirm your place within <strong>24 hours</strong>.</div>
+        <div style="margin-bottom:1.5rem;"><span class="email-status" id="emailStatusBadge">📧 Sending notification...</span></div>
+        <div class="confirm-details" id="confirmDetails"></div>
+        <div class="confirm-actions">
+          <button class="btn-pdf" onclick="downloadPDF('PENDING')">📄 Download Receipt (PENDING)</button>
+          <a href="check-payment.html" class="check-payment-btn">🔍 Check My Payment Status</a>
+          <a id="whatsappConfirmBtn" href="#" target="_blank" class="whatsapp-btn">💬 Message Teacher Dove</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-nav" id="formNav">
+      <button class="btn-back" id="btnBack" onclick="goBack()" style="visibility:hidden;">← Back</button>
+      <button class="btn-next" id="btnNext" onclick="goNext()">Continue →</button>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="price-card">
+      <div class="price-card-header"><div class="price-card-title">💰 Price Summary</div><div class="price-card-level" id="sidebar_level">Select a level to see pricing</div></div>
+      <div class="price-card-body" id="priceCardBody"><div class="price-placeholder">👆 Choose your level on Step 2 and the full price breakdown will appear here.</div></div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">🛡️ What happens next?</div>
+      <div class="info-item"><div class="dot"></div><span>Submit your form and proof of payment.</span></div>
+      <div class="info-item"><div class="dot"></div><span>Teacher Dove reviews your payment within 24 hours.</span></div>
+      <div class="info-item"><div class="dot"></div><span>You receive a WhatsApp confirmation with class details.</span></div>
+      <div class="info-item"><div class="dot"></div><span>Check your payment status anytime using your reference code.</span></div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-title">💬 Need Help?</div>
+      <div class="info-item"><div class="dot"></div><span>WhatsApp: <strong>+258 82 892 0143</strong></span></div>
+      <div class="info-item"><div class="dot"></div><span>Email: <strong>contact@dovelingua.com</strong></span></div>
+      <div class="info-item"><div class="dot"></div><span>www.dovelingua.com</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ──
+emailjs.init('TGER1C87naRt1um3f');
+const EMAILJS_SERVICE  = 'service_9gpgp6f';
+const EMAILJS_TEMPLATE = 'template_28tmhkb';
+
+// ⚠️ DOVE: Paste your JSONbin API key here when you have it
+const JSONBIN_API_KEY = 'PASTE_YOUR_JSONBIN_KEY_HERE';
+const JSONBIN_BIN_ID  = 'PASTE_YOUR_BIN_ID_HERE';
+
+const LEVELS = [
+  { id:'L0', name:'First Steps',        cefr:'Pre-A1', num:'0', desc:'Zero English. Build confidence and speak your first words.',             tuition:1500, registration:300, materials:200 },
+  { id:'L1', name:'Beginner',           cefr:'A1',     num:'1', desc:'Communicate about yourself, family and daily life.',                    tuition:2000, registration:300, materials:250 },
+  { id:'L2', name:'Elementary',         cefr:'A2',     num:'2', desc:'Handle everyday situations — shopping, plans and advice.',              tuition:2200, registration:300, materials:250 },
+  { id:'L3', name:'Pre-Intermediate',   cefr:'A2+',    num:'3', desc:'Express opinions and discuss familiar topics confidently.',             tuition:2400, registration:300, materials:300 },
+  { id:'L4', name:'Intermediate',       cefr:'B1',     num:'4', desc:'Communicate with accuracy across a wide range of topics.',             tuition:2600, registration:300, materials:300 },
+  { id:'L5', name:'Upper Intermediate', cefr:'B2',     num:'5', desc:'Communicate confidently on academic and professional topics.',         tuition:2800, registration:300, materials:350 },
+  { id:'L6', name:'Advanced',           cefr:'C1',     num:'6', desc:'Fluent, precise communication in complex contexts.',                   tuition:3000, registration:300, materials:350 }
+];
+
+let currentStep=1, selectedLevel=null, selectedPay='mpesa',
+    enrollmentRef='', paymentTimer=null, timeLeft=30*60,
+    proofUploaded=false, submissionData={};
+
+function init() {
+  renderLevels();
+  enrollmentRef = generateRef();
+  document.getElementById('refNumber').textContent = enrollmentRef;
+  document.getElementById('mpesa_ref').textContent = enrollmentRef;
+  document.getElementById('emola_ref').textContent = enrollmentRef;
+}
+
+function generateRef() {
+  const n = new Date();
+  const d = `${n.getFullYear()}${String(n.getMonth()+1).padStart(2,'0')}${String(n.getDate()).padStart(2,'0')}`;
+  const t = `${String(n.getHours()).padStart(2,'0')}${String(n.getMinutes()).padStart(2,'0')}`;
+  const ms = String(n.getMilliseconds()).padStart(3,'0');
+  const r = Math.floor(10+Math.random()*90);
+  return `DVL-${d}-${t}${ms}${r}`;
+}
+
+function renderLevels() {
+  document.getElementById('levelSelector').innerHTML = LEVELS.map(l => {
+    const total = l.tuition+l.registration+l.materials;
+    return `<div class="level-option" id="lvl_${l.id}" onclick="selectLevel('${l.id}')">
+      <div class="level-option-badge">Level ${l.num} · ${l.cefr}</div>
+      <div class="level-option-name">${l.name}</div>
+      <div class="level-option-price">${total.toLocaleString()} MZN</div>
+      <div class="level-option-desc">${l.desc}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectLevel(id) {
+  selectedLevel = LEVELS.find(l=>l.id===id);
+  document.querySelectorAll('.level-option').forEach(el=>el.classList.remove('selected'));
+  document.getElementById('lvl_'+id).classList.add('selected');
+  document.getElementById('err_level').classList.remove('show');
+  updatePriceCard();
+}
+
+function updatePriceCard() {
+  if(!selectedLevel) return;
+  const l=selectedLevel, total=l.tuition+l.registration+l.materials;
+  document.getElementById('sidebar_level').textContent=`Level ${l.num} — ${l.name} (${l.cefr})`;
+  document.getElementById('priceCardBody').innerHTML=`
+    <div class="price-row"><span class="price-row-label">📚 Tuition Fee</span><span class="price-row-val">${l.tuition.toLocaleString()} MZN</span></div>
+    <div class="price-row"><span class="price-row-label">📋 Registration Fee</span><span class="price-row-val">${l.registration.toLocaleString()} MZN</span></div>
+    <div class="price-row"><span class="price-row-label">📖 Materials Fee</span><span class="price-row-val">${l.materials.toLocaleString()} MZN</span></div>
+    <div class="price-total"><span class="price-total-label">Total Due</span><span class="price-total-val">${total.toLocaleString()} MZN</span></div>`;
+  document.getElementById('mpesa_amount').textContent=total.toLocaleString();
+  document.getElementById('emola_amount').textContent=total.toLocaleString();
+}
+
+function selectPayMethod(m) {
+  selectedPay=m;
+  document.getElementById('tab_mpesa').classList.toggle('selected',m==='mpesa');
+  document.getElementById('tab_emola').classList.toggle('selected',m==='emola');
+  document.getElementById('inst_mpesa').classList.toggle('show',m==='mpesa');
+  document.getElementById('inst_emola').classList.toggle('show',m==='emola');
+}
+
+function copyRef() {
+  navigator.clipboard.writeText(enrollmentRef)
+    .then(()=>showToast('✅ Reference copied!','success'))
+    .catch(()=>showToast('Reference: '+enrollmentRef,'info'));
+}
+
+function handleUpload(input) {
+  if(input.files&&input.files[0]) {
+    proofUploaded=true;
+    document.getElementById('uploadPreview').textContent='✅ '+input.files[0].name;
+    document.getElementById('uploadArea').style.borderColor='var(--green)';
+    document.getElementById('err_proof').classList.remove('show');
+    showToast('📸 Proof uploaded!','success');
+  }
+}
+
+function startTimer() {
+  clearInterval(paymentTimer);
+  timeLeft=30*60;
+  paymentTimer=setInterval(()=>{
+    timeLeft--;
+    const m=Math.floor(timeLeft/60), s=timeLeft%60;
+    document.getElementById('timerDisplay').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    if(timeLeft<=0){clearInterval(paymentTimer);document.getElementById('timerDisplay').textContent='EXPIRED';showToast('⚠️ Time expired. Please restart.','error');}
+  },1000);
+}
+
+function updateSteps(step) {
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById(`step${i}-ind`);
+    el.className='step';
+    if(i<step)el.classList.add('done');
+    else if(i===step)el.classList.add('active');
+  }
+}
+
+function validateStep1() {
+  let ok=true;
+  [{id:'f_name',err:'err_name',test:v=>v.trim().length>=2},
+   {id:'f_age',err:'err_age',test:v=>v>=8&&v<=80},
+   {id:'f_gender',err:'err_gender',test:v=>v!==''},
+   {id:'f_phone',err:'err_phone',test:v=>v.trim().length>=8},
+   {id:'f_whatsapp',err:'err_whatsapp',test:v=>v.trim().length>=8},
+   {id:'f_country',err:'err_country',test:v=>v.trim().length>=2},
+   {id:'f_province',err:'err_province',test:v=>v.trim().length>=2},
+   {id:'f_city',err:'err_city',test:v=>v.trim().length>=2}
+  ].forEach(c=>{
+    const el=document.getElementById(c.id);
+    const valid=c.test(el.value);
+    el.classList.toggle('error',!valid);
+    document.getElementById(c.err).classList.toggle('show',!valid);
+    if(!valid)ok=false;
+  });
+  return ok;
+}
+function validateStep2(){if(!selectedLevel){document.getElementById('err_level').classList.add('show');return false;}return true;}
+function validateStep3(){if(!proofUploaded){document.getElementById('err_proof').classList.add('show');showToast('⚠️ Please upload proof of payment.','error');return false;}return true;}
+
+function goNext(){
+  if(currentStep===1&&!validateStep1()){showToast('⚠️ Please fill all required fields.','error');return;}
+  if(currentStep===2&&!validateStep2())return;
+  if(currentStep===3){if(!validateStep3())return;submitEnrolment();return;}
+  currentStep++;showStep(currentStep);
+  if(currentStep===3)startTimer();
+}
+function goBack(){if(currentStep<=1)return;currentStep--;showStep(currentStep);}
+function showStep(step){
+  document.querySelectorAll('.form-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('section'+step).classList.add('active');
+  updateSteps(step);
+  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById('btnBack').style.visibility=(step>1&&step<4)?'visible':'hidden';
+  const btn=document.getElementById('btnNext');
+  if(step===4)document.getElementById('formNav').style.display='none';
+  else if(step===3)btn.innerHTML='✅ Submit Enrolment';
+  else btn.innerHTML='Continue →';
+}
+
+async function saveToJSONbin(data) {
+  try {
+    // First get existing records
+    const getRes = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+      headers: { 'X-Master-Key': JSONBIN_API_KEY }
+    });
+    const existing = await getRes.json();
+    const records = existing.record.enrollments || [];
+    records.push(data);
+    // Update bin with new record added
+    await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
+      body: JSON.stringify({ enrollments: records })
+    });
+  } catch(e) { console.warn('JSONbin save failed:', e); }
+}
+
+async function submitEnrolment() {
+  clearInterval(paymentTimer);
+  const name=document.getElementById('f_name').value.trim();
+  const age=document.getElementById('f_age').value;
+  const gender=document.getElementById('f_gender').value;
+  const phone=document.getElementById('f_phone').value.trim();
+  const whatsapp=document.getElementById('f_whatsapp').value.trim();
+  const email=document.getElementById('f_email').value.trim();
+  const country=document.getElementById('f_country').value.trim();
+  const province=document.getElementById('f_province').value.trim();
+  const city=document.getElementById('f_city').value.trim();
+  const l=selectedLevel;
+  const total=l.tuition+l.registration+l.materials;
+  const payLabel=selectedPay==='mpesa'?'M-Pesa':'e-Mola';
+  const dateStr=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+
+  submissionData={name,age,gender,phone,whatsapp,email,country,province,city,l,total,payLabel,dateStr};
+
+  showLoading('Submitting your enrolment...');
+
+  // Save to JSONbin
+  await saveToJSONbin({
+    ref: enrollmentRef,
+    name, age, gender, phone, whatsapp, email,
+    country, province, city,
+    level: `${l.num} — ${l.name}`,
+    cefr: l.cefr,
+    total: total,
+    payMethod: payLabel,
+    date: dateStr,
+    status: 'PENDING'   // ← Teacher Dove changes this to CONFIRMED in admin page
+  });
+
+  const waMsg=encodeURIComponent(
+`🕊️ *NEW DOVELINGUA ENROLMENT*
+━━━━━━━━━━━━━━━━━━━━━
+👤 *Student:* ${name}
+🎂 *Age:* ${age}  |  ⚧ *Gender:* ${gender}
+📱 *Phone:* ${phone}
+💬 *WhatsApp:* ${whatsapp}
+📧 *Email:* ${email||'Not provided'}
+🌍 *Country:* ${country}
+📍 *Province:* ${province}  |  🏙️ *City:* ${city}
+━━━━━━━━━━━━━━━━━━━━━
+📚 *Level:* ${l.num} — ${l.name} (${l.cefr})
+💰 *Tuition:* ${l.tuition.toLocaleString()} MZN
+💰 *Registration:* ${l.registration.toLocaleString()} MZN
+💰 *Materials:* ${l.materials.toLocaleString()} MZN
+✅ *TOTAL:* ${total.toLocaleString()} MZN
+💳 *Method:* ${payLabel}
+🔑 *Reference:* ${enrollmentRef}
+📅 *Date:* ${dateStr}
+━━━━━━━━━━━━━━━━━━━━━
+📸 Proof uploaded via website. Please verify.`
+  );
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, {
+      student_name:name, student_age:age, student_gender:gender,
+      student_phone:phone, student_whatsapp:whatsapp,
+      student_email:email||'Not provided',
+      student_country:country, student_province:province, student_city:city,
+      level_num:l.num, level_name:l.name, level_cefr:l.cefr,
+      fee_tuition:l.tuition.toLocaleString(),
+      fee_registration:l.registration.toLocaleString(),
+      fee_materials:l.materials.toLocaleString(),
+      total:total.toLocaleString(), pay_method:payLabel,
+      ref_code:enrollmentRef, enrol_date:dateStr,
+    });
+    document.getElementById('emailStatusBadge').textContent='📧 Notification sent to Teacher Dove ✅';
+    document.getElementById('emailStatusBadge').className='email-status sent';
+  } catch(err) {
+    document.getElementById('emailStatusBadge').textContent='⚠️ Email failed — please notify Teacher Dove via WhatsApp';
+    document.getElementById('emailStatusBadge').className='email-status failed';
+  }
+
+  hideLoading();
+  currentStep=4; showStep(4);
+
+  document.getElementById('confirm_name').textContent=name;
+  document.getElementById('confirmDetails').innerHTML=`
+    <div class="confirm-detail-row"><span class="confirm-detail-label">Student</span><span class="confirm-detail-val">${name}</span></div>
+    <div class="confirm-detail-row"><span class="confirm-detail-label">Level</span><span class="confirm-detail-val">${l.num} — ${l.name}</span></div>
+    <div class="confirm-detail-row"><span class="confirm-detail-label">CEFR</span><span class="confirm-detail-val">${l.cefr}</span></div>
+    <div class="confirm-detail-row"><span class="confirm-detail-label">Total Paid</span><span class="confirm-detail-val">${total.toLocaleString()} MZN</span></div>
+    <div class="confirm-detail-row"><span class="confirm-detail-label">Payment Method</span><span class="confirm-detail-val">${payLabel}</span></div>
+    <div class="confirm-detail-row"><span class="confirm-detail-label">Reference</span><span class="confirm-detail-val">${enrollmentRef}</span></div>
+    <div class="confirm-detail-row"><span class="confirm-detail-label">Date</span><span class="confirm-detail-val">${dateStr}</span></div>`;
+
+  document.getElementById('whatsappConfirmBtn').href=`https://wa.me/258828920143?text=${waMsg}`;
+  showToast('🎉 Enrolment submitted!','success');
+}
+
+// ── PDF WITH TABLE + STAMP + SIGNATURE ──
+function downloadPDF(status) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const d = submissionData;
+  const pageW = 210, m = 18;
+  const paid = status === 'CONFIRMED';
+
+  // Header bg
+  doc.setFillColor(13,27,42);
+  doc.rect(0,0,pageW,50,'F');
+  doc.setFillColor(14,124,123);
+  doc.rect(0,47,pageW,4,'F');
+
+  // Logo
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(24);
+  doc.text('DoveLingua',m,19);
+  doc.setFontSize(9.5);
+  doc.setTextColor(232,199,102);
+  doc.text('English Learning Academy',m,26);
+  doc.setTextColor(160,185,210);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.text('www.dovelingua.com  |  contact@dovelingua.com  |  +258 84 892 0143',m,33);
+  doc.text('Mozambique — Founded April 2026',m,39);
+
+  // Receipt title top-right
+  doc.setTextColor(232,199,102);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(12);
+  doc.text('ENROLMENT RECEIPT',pageW-m,20,{align:'right'});
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.setTextColor(180,205,225);
+  doc.text('Ref: '+enrollmentRef,pageW-m,27,{align:'right'});
+  doc.text('Date: '+d.dateStr,pageW-m,33,{align:'right'});
+
+  let y=60;
+
+  // ── TABLE HELPER ──
+  function tableRow(label, value, shaded) {
+    const rowH = 9;
+    if(shaded) { doc.setFillColor(245,248,252); doc.rect(m,y-6,pageW-m*2,rowH,'F'); }
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8.5);
+    doc.setTextColor(13,27,42);
+    doc.text(label, m+3, y);
+    doc.setFont('helvetica','normal');
+    doc.setTextColor(50,70,90);
+    doc.text(String(value), m+65, y);
+    doc.setDrawColor(220,228,236);
+    doc.line(m, y+2.5, pageW-m, y+2.5);
+    y += rowH;
+  }
+
+  function sectionHeader(title) {
+    y += 3;
+    doc.setFillColor(13,27,42);
+    doc.rect(m,y-5,pageW-m*2,9,'F');
+    doc.setTextColor(232,199,102);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(8.5);
+    doc.text(title,m+3,y);
+    y += 8;
+  }
+
+  // Draw table border
+  doc.setDrawColor(14,124,123);
+  doc.setLineWidth(0.6);
+  doc.roundedRect(m,y-8,pageW-m*2,145,2,2,'S');
+
+  sectionHeader('STUDENT INFORMATION');
+  tableRow('Full Name',        d.name,         false);
+  tableRow('Age',              d.age+' years', true);
+  tableRow('Gender',           d.gender,       false);
+  tableRow('Phone Number',     d.phone,        true);
+  tableRow('WhatsApp Number',  d.whatsapp,     false);
+  tableRow('Email Address',    d.email||'Not provided', true);
+  tableRow('Country',          d.country,      false);
+  tableRow('Province / State', d.province,     true);
+  tableRow('City / District',  d.city,         false);
+
+  sectionHeader('LEVEL & PAYMENT DETAILS');
+  tableRow('Level Selected',   d.l.num+' — '+d.l.name, false);
+  tableRow('CEFR Reference',   d.l.cefr,      true);
+  tableRow('Tuition Fee',      d.l.tuition.toLocaleString()+' MZN', false);
+  tableRow('Registration Fee', d.l.registration.toLocaleString()+' MZN', true);
+  tableRow('Materials Fee',    d.l.materials.toLocaleString()+' MZN', false);
+  tableRow('Payment Method',   d.payLabel,    true);
+  tableRow('Reference Code',   enrollmentRef, false);
+  tableRow('Enrolment Date',   d.dateStr,     true);
+
+  // Total row
+  y += 2;
+  doc.setFillColor(14,124,123);
+  doc.roundedRect(m,y-5,pageW-m*2,11,2,2,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(10);
+  doc.text('TOTAL AMOUNT DUE',m+3,y+2);
+  doc.text(d.total.toLocaleString()+' MZN',pageW-m-3,y+2,{align:'right'});
+  y += 18;
+
+  // ── PAYMENT STATUS STAMP ──
+  doc.saveGraphicsState();
+  doc.setGState(new doc.GState({ opacity: 0.13 }));
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(44);
+  if(paid) {
+    doc.setTextColor(39,142,73);
+  } else {
+    doc.setTextColor(201,168,76);
+  }
+  // Rotate stamp diagonally across right side
+  doc.text(paid?'CONFIRMED':'PENDING', pageW-m-10, y-30, { align:'right', angle:35 });
+  doc.restoreGraphicsState();
+
+  // Stamp box (solid border)
+  const stampX = pageW - m - 58, stampY = y - 48;
+  if(paid) {
+    doc.setDrawColor(39,142,73); doc.setTextColor(39,142,73);
+  } else {
+    doc.setDrawColor(201,100,30); doc.setTextColor(201,100,30);
+  }
+  doc.setLineWidth(2.5);
+  doc.roundedRect(stampX, stampY, 55, 20, 3, 3, 'S');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(13);
+  doc.text(paid?'✓ CONFIRMED':'⏳ PENDING', stampX+27.5, stampY+8, {align:'center'});
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(6.5);
+  doc.text('Payment Status', stampX+27.5, stampY+14, {align:'center'});
+
+  // ── STATUS NOTE ──
+  if(paid) {
+    doc.setFillColor(232,245,233);
+    doc.setDrawColor(39,142,73);
+  } else {
+    doc.setFillColor(255,248,230);
+    doc.setDrawColor(201,168,76);
+  }
+  doc.setLineWidth(0.4);
+  doc.roundedRect(m,y,pageW-m*2,14,2,2,'FD');
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(paid?39:160, paid?142:100, paid?73:20);
+  doc.text(paid?'PAYMENT CONFIRMED — Enrolment is active. Welcome to DoveLingua!':'SUBMITTED — Awaiting payment verification from Teacher Dove (within 24 hours).',m+4,y+6);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(80,90,100);
+  doc.text(paid?'Your student account will be created. You will receive class details via WhatsApp.':'This receipt confirms submission only. Check your status at: dovelingua.com/check-payment.html',m+4,y+11.5);
+  y += 22;
+
+  // ── SIGNATURE BLOCK ──
+  y += 4;
+  doc.setDrawColor(200,210,220);
+  doc.setLineWidth(0.3);
+  doc.line(m, y, m+80, y);
+  // Cursive-style signature using italic serif
+  doc.setFont('times','bolditalic');
+  doc.setFontSize(18);
+  doc.setTextColor(13,27,42);
+  doc.text('Gildo Angelica Dove', m, y-3);
+  // Underline flourish
+  doc.setDrawColor(14,124,123);
+  doc.setLineWidth(0.8);
+  doc.line(m, y+1, m+72, y+1);
+  y += 7;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(7.5);
+  doc.setTextColor(13,27,42);
+  doc.text('Teacher Dove — Founder & Director', m, y);
+  y += 5;
+  doc.setFont('helvetica','normal');
+  doc.setTextColor(100,115,130);
+  doc.setFontSize(7);
+  doc.text('DoveLingua English Learning Academy', m, y);
+  y += 4;
+  doc.text('Licenciatura em Inglês com Especialização ao Ensino', m, y);
+  y += 4;
+  doc.text('Universidade Save, Mozambique, 2026', m, y);
+
+  // ── FOOTER ──
+  doc.setFillColor(13,27,42);
+  doc.rect(0,272,pageW,25,'F');
+  doc.setTextColor(232,199,102);
+  doc.setFont('times','bolditalic');
+  doc.setFontSize(9.5);
+  doc.text('"Learn English today and connect with the World tomorrow."',pageW/2,281,{align:'center'});
+  doc.setTextColor(160,185,210);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(7.5);
+  doc.text('DoveLingua English Learning Academy  |  www.dovelingua.com  |  contact@dovelingua.com',pageW/2,288,{align:'center'});
+  doc.text('Ref: '+enrollmentRef+'  |  '+d.dateStr,pageW/2,293,{align:'center'});
+
+  const filename = `DoveLingua_Receipt_${enrollmentRef}_${paid?'CONFIRMED':'PENDING'}.pdf`;
+  doc.save(filename);
+  showToast('📄 Receipt downloaded!','success');
+}
+
+function showLoading(msg){document.getElementById('loadingText').textContent=msg||'Please wait...';document.getElementById('loadingOverlay').classList.add('show');}
+function hideLoading(){document.getElementById('loadingOverlay').classList.remove('show');}
+function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),4500);}
+
+init();
+</script>
+</body>
+</html>
