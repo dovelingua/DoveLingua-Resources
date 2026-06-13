@@ -2000,120 +2000,88 @@
       const ref = params.get('ref');
       if (!ref || ref.length !== 13 || !ref.startsWith('DVL-APP')) return;
 
-      // Build the banner HTML
+      const appUrl = `https://app.dovelingua.com/login.html?ref=${encodeURIComponent(ref)}`;
+
+      // Animate banner in
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes slideDownBanner {
+          from { transform: translateY(-100%); opacity: 0; }
+          to   { transform: translateY(0); opacity: 1; }
+        }`;
+      document.head.appendChild(style);
+
+      // Top fixed banner
       const banner = document.createElement('div');
       banner.id = 'invite-bonus-banner';
       banner.style.cssText = `
-    position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
-    background: linear-gradient(135deg, #0A5C3A, #0D7A6B);
-    color: white; padding: 14px 20px;
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    animation: slideDownBanner 0.5s cubic-bezier(0.4,0,0.2,1) both;
-  `;
-
-      const style = document.createElement('style');
-      style.textContent = `
-    @keyframes slideDownBanner {
-      from { transform: translateY(-100%); opacity: 0; }
-      to   { transform: translateY(0);     opacity: 1; }
-    }
-  `;
-      document.head.appendChild(style);
-
+        position:fixed;top:0;left:0;right:0;z-index:9999;
+        background:linear-gradient(135deg,#0A5C3A,#0D7A6B);
+        color:white;padding:12px 16px;
+        display:flex;align-items:center;justify-content:space-between;
+        gap:10px;box-shadow:0 4px 20px rgba(0,0,0,0.3);
+        font-family:'Plus Jakarta Sans',sans-serif;
+        animation:slideDownBanner 0.5s cubic-bezier(0.4,0,0.2,1) both;`;
       banner.innerHTML = `
-    <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
-      <span style="font-size:1.5rem;flex-shrink:0;">🎁</span>
-      <div style="min-width:0;">
-        <div style="font-size:0.82rem;font-weight:700;line-height:1.3;">
-          Foste convidado! Regista-te e ganha <strong style="color:#FFD580;">+50 pontos</strong> grátis!
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+          <span style="font-size:1.4rem;flex-shrink:0;">🎁</span>
+          <div style="min-width:0;">
+            <div style="font-size:0.8rem;font-weight:700;line-height:1.3;">
+              Foste convidado! Regista-te e ganha <strong style="color:#FFD580;">+50 pontos</strong> grátis!
+            </div>
+            <div style="font-size:0.65rem;color:rgba(255,255,255,0.75);margin-top:2px;">
+              Código: <strong style="color:#FFD580;">${ref}</strong> — será aplicado automaticamente ✅
+            </div>
+          </div>
         </div>
-        <div style="font-size:0.68rem;color:rgba(255,255,255,0.7);margin-top:2px;">
-          Código de convite: <strong style="color:#FFD580;letter-spacing:0.05em;">${ref}</strong> — aplicado automaticamente ✅
-        </div>
-      </div>
-    </div>
-    <button onclick="document.getElementById('invite-bonus-banner').remove()"
-      style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);
-      border-radius:8px;color:white;width:28px;height:28px;font-size:0.9rem;
-      cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-      ✕
-    </button>
-  `;
-
+        <button onclick="document.getElementById('invite-bonus-banner').remove();document.body.style.paddingTop='52px';"
+          style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);
+          border-radius:8px;color:white;width:26px;height:26px;font-size:0.85rem;
+          cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">✕</button>`;
       document.body.prepend(banner);
-
-      // Push the page content down so banner doesn't overlap
       document.body.style.paddingTop = '70px';
 
-      // Update the topbar download button to carry the ref to login.html
-      const appUrl = `https://app.dovelingua.com/login.html?ref=${encodeURIComponent(ref)}`;
-
-      setTimeout(() => {
-        // Add a visible instruction box below the download button
+      // Wait for DOM then inject buttons near hero download button
+      window.addEventListener('load', function () {
         const heroDlBtn = document.querySelector('.hero-dl-btn');
-        if (heroDlBtn) {
-          // The register link (for users who already have the app)
-          const registerBtn = document.createElement('a');
-          registerBtn.href = appUrl;
-          registerBtn.style.cssText = `
-        display: inline-flex; align-items: center; gap: 8px;
-        background: rgba(255,255,255,0.15);
-        border: 1.5px solid rgba(255,255,255,0.4);
-        color: white; text-decoration: none;
-        border-radius: 14px; padding: 11px 24px;
-        font-size: 0.85rem; font-weight: 700;
-        margin-top: 8px; position: relative; z-index: 1;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        display: block; text-align: center;
-      `;
-          registerBtn.innerHTML = '👤 Já tens a app? Regista-te e recebe os teus pontos';
-          heroDlBtn.insertAdjacentElement('afterend', registerBtn);
+        if (!heroDlBtn) return;
 
-          // Add instruction note below APK button
-          const note = document.createElement('div');
-          note.style.cssText = `
-        background: rgba(255,255,255,0.08);
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 10px; padding: 10px 14px;
-        margin-top: 10px; font-size: 0.72rem;
-        color: rgba(255,255,255,0.75); line-height: 1.6;
-        position: relative; z-index: 1;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        text-align: left;
-      `;
-          note.innerHTML = `
-        <strong style="color:#FFD580;">📋 Como receber os teus +50 pontos:</strong><br>
-        1. Descarrega e instala a app<br>
-        2. Abre a app e toca em <strong>"Criar Conta"</strong><br>
-        3. O teu código de convite (<strong style="color:#FFD580;">${ref}</strong>) será preenchido automaticamente<br>
-        4. Completa o registo e os pontos são teus! ✅
-      `;
-          registerBtn.insertAdjacentElement('afterend', note);
-        }
-      }, 300);
-
-      // Show a secondary "Open App / Register" button near hero download
-      const heroDlBtn = document.querySelector('.hero-dl-btn');
-      if (heroDlBtn) {
+        // Register button
         const registerBtn = document.createElement('a');
         registerBtn.href = appUrl;
         registerBtn.style.cssText = `
-        display: inline-flex; align-items: center; gap: 8px;
-        background: rgba(255,255,255,0.15);
-        border: 1.5px solid rgba(255,255,255,0.4);
-        color: white; text-decoration: none;
-        border-radius: 14px; padding: 11px 24px;
-        font-size: 0.85rem; font-weight: 700;
-        margin-top: 8px; position: relative; z-index: 1;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-      `;
-        registerBtn.innerHTML = '👤 Já tens a app? Regista-te aqui';
+          display:block;text-align:center;
+          background:rgba(255,255,255,0.15);
+          border:1.5px solid rgba(255,255,255,0.4);
+          color:white;text-decoration:none;
+          border-radius:14px;padding:11px 24px;
+          font-size:0.85rem;font-weight:700;
+          margin-top:10px;position:relative;z-index:1;
+          font-family:'Plus Jakarta Sans',sans-serif;`;
+        registerBtn.innerHTML = '👤 Já tens a app? Regista-te e recebe os teus pontos';
         heroDlBtn.insertAdjacentElement('afterend', registerBtn);
-      }
-    }, 300);
-    }) ();
+
+        // Instruction note
+        const note = document.createElement('div');
+        note.style.cssText = `
+          background:rgba(255,255,255,0.08);
+          border:1px solid rgba(255,255,255,0.2);
+          border-radius:10px;padding:10px 14px;
+          margin-top:8px;font-size:0.72rem;
+          color:rgba(255,255,255,0.8);line-height:1.65;
+          position:relative;z-index:1;
+          font-family:'Plus Jakarta Sans',sans-serif;
+          text-align:left;`;
+        note.innerHTML = `
+          <strong style="color:#FFD580;">📋 Como receber os teus +50 pontos:</strong><br>
+          1. Descarrega e instala a app abaixo<br>
+          2. Abre a app e toca em <strong>"Criar Conta"</strong><br>
+          3. O código <strong style="color:#FFD580;">${ref}</strong> será preenchido automaticamente<br>
+          4. Completa o registo e os pontos são teus! ✅`;
+        registerBtn.insertAdjacentElement('afterend', note);
+      });
+    })();
+
     // ── SLIDER ──
     const slides = [
       { img: 'https://download.dovelingua.com/English%20Dove%20App/splash.jpg', title: 'Bem-vindo ao English Dove', body: 'A tua jornada de inglês começa aqui. Uma aplicação simples, gratuita e profissional criada em Moçambique para todos.' },
