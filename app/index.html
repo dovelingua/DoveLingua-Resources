@@ -1993,6 +1993,7 @@
 
   <script>
     emailjs.init('TGER1C87naRt1um3f');
+
     // ── INVITE REF HANDLER ──────────────────────────────
     (function handleInviteRef() {
       const params = new URLSearchParams(window.location.search);
@@ -2049,18 +2050,11 @@
       // Update the topbar download button to carry the ref to login.html
       const appUrl = `https://app.dovelingua.com/login.html?ref=${encodeURIComponent(ref)}`;
 
-      // Update ALL download buttons on the page to include ref in app link
-      // The APK download itself is unchanged — ref goes to app URL shown to user
       setTimeout(() => {
-        const dlBtn = document.querySelector('.topbar-dl');
-        if (dlBtn) {
-          dlBtn.setAttribute('data-ref', ref);
-          dlBtn.setAttribute('data-app-url', appUrl);
-        }
-
-        // Show a secondary "Open App / Register" button near hero download
+        // Add a visible instruction box below the download button
         const heroDlBtn = document.querySelector('.hero-dl-btn');
         if (heroDlBtn) {
+          // The register link (for users who already have the app)
           const registerBtn = document.createElement('a');
           registerBtn.href = appUrl;
           registerBtn.style.cssText = `
@@ -2072,12 +2066,54 @@
         font-size: 0.85rem; font-weight: 700;
         margin-top: 8px; position: relative; z-index: 1;
         font-family: 'Plus Jakarta Sans', sans-serif;
+        display: block; text-align: center;
       `;
-          registerBtn.innerHTML = '👤 Já tens a app? Regista-te aqui';
+          registerBtn.innerHTML = '👤 Já tens a app? Regista-te e recebe os teus pontos';
           heroDlBtn.insertAdjacentElement('afterend', registerBtn);
+
+          // Add instruction note below APK button
+          const note = document.createElement('div');
+          note.style.cssText = `
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 10px; padding: 10px 14px;
+        margin-top: 10px; font-size: 0.72rem;
+        color: rgba(255,255,255,0.75); line-height: 1.6;
+        position: relative; z-index: 1;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        text-align: left;
+      `;
+          note.innerHTML = `
+        <strong style="color:#FFD580;">📋 Como receber os teus +50 pontos:</strong><br>
+        1. Descarrega e instala a app<br>
+        2. Abre a app e toca em <strong>"Criar Conta"</strong><br>
+        3. O teu código de convite (<strong style="color:#FFD580;">${ref}</strong>) será preenchido automaticamente<br>
+        4. Completa o registo e os pontos são teus! ✅
+      `;
+          registerBtn.insertAdjacentElement('afterend', note);
         }
       }, 300);
-    })();
+
+      // Show a secondary "Open App / Register" button near hero download
+      const heroDlBtn = document.querySelector('.hero-dl-btn');
+      if (heroDlBtn) {
+        const registerBtn = document.createElement('a');
+        registerBtn.href = appUrl;
+        registerBtn.style.cssText = `
+        display: inline-flex; align-items: center; gap: 8px;
+        background: rgba(255,255,255,0.15);
+        border: 1.5px solid rgba(255,255,255,0.4);
+        color: white; text-decoration: none;
+        border-radius: 14px; padding: 11px 24px;
+        font-size: 0.85rem; font-weight: 700;
+        margin-top: 8px; position: relative; z-index: 1;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+      `;
+        registerBtn.innerHTML = '👤 Já tens a app? Regista-te aqui';
+        heroDlBtn.insertAdjacentElement('afterend', registerBtn);
+      }
+    }, 300);
+    }) ();
     // ── SLIDER ──
     const slides = [
       { img: 'https://download.dovelingua.com/English%20Dove%20App/splash.jpg', title: 'Bem-vindo ao English Dove', body: 'A tua jornada de inglês começa aqui. Uma aplicação simples, gratuita e profissional criada em Moçambique para todos.' },
