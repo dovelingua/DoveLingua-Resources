@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoliaRise – CV Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+  /* ─── DESIGN TOKENS ─── */
+  :root {
+    --navy: #1B2F5E;
+    --navy-light: #243d7a;
+    --gold: #C9A84C;
+    --gold-light: #e8c36a;
+    --white: #FFFFFF;
+    --off-white: #F5F6FA;
+    --surface: #EEF0F7;
+    --text: #1A1A2E;
+    --text-muted: #6B7280;
+    --border: #E2E5EF;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(27,47,94,0.10);
+    --shadow-lg: 0 8px 40px rgba(27,47,94,0.16);
+    --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ─── RESET ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--off-white);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(27,47,94,0.06);
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--gold); }
+  .header-actions { display: flex; align-items: center; gap: 1rem; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.2rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-primary {
+    background: var(--navy);
+    color: var(--white);
+  }
+  .btn-primary:hover { background: var(--navy-light); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .btn-gold {
+    background: var(--gold);
+    color: var(--white);
+  }
+  .btn-gold:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .btn-outline {
+    background: transparent;
+    color: var(--navy);
+    border: 1.5px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--navy); background: var(--off-white); }
+
+  /* ─── LAYOUT ─── */
+  .app-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* ─── LEFT PANEL ─── */
+  .panel-left {
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* ─── SECTION TITLES ─── */
+  .section-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ─── TEMPLATE PICKER ─── */
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  .template-card {
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+  }
+  .template-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .template-card.active { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(27,47,94,0.15); }
+  .template-card.active::after {
+    content: '';
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 16px; height: 16px;
+    background: var(--navy);
+    border-radius: 50%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+    background-size: 10px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+  .template-thumb {
+    width: 100%;
+    aspect-ratio: 3/4;
+    display: flex;
+    flex-direction: column;
+  }
+  .template-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 0.35rem;
+    color: var(--text-muted);
+    background: var(--off-white);
+  }
+
+  /* Template Thumbnails */
+  .thumb-classic { background: #fff; padding: 6px; }
+  .thumb-classic .t-header { background: #1B2F5E; height: 28%; display: flex; align-items: center; justify-content: center; border-radius: 2px; }
+  .thumb-classic .t-header .t-circle { width: 20px; height: 20px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+  .thumb-classic .t-body { padding: 4px 2px; }
+  .thumb-classic .t-line { height: 3px; background: #eee; border-radius: 2px; margin: 3px 0; }
+  .thumb-classic .t-line.short { width: 60%; }
+  .thumb-classic .t-line.gold { background: #C9A84C; width: 40%; }
+
+  .thumb-modern { background: #fff; display: flex; }
+  .thumb-modern .t-sidebar { width: 35%; background: #1B2F5E; padding: 4px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .thumb-modern .t-sidebar .t-circle { width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+  .thumb-modern .t-sidebar .t-line { height: 2px; background: rgba(255,255,255,0.3); border-radius: 1px; width: 80%; }
+  .thumb-modern .t-main { flex: 1; padding: 4px; }
+  .thumb-modern .t-main .t-line { height: 2px; background: #eee; border-radius: 1px; margin: 3px 0; }
+  .thumb-modern .t-main .t-line.gold { background: #C9A84C; width: 50%; }
+
+  .thumb-minimal { background: #fff; padding: 6px; }
+  .thumb-minimal .t-top { border-bottom: 2px solid #C9A84C; padding-bottom: 4px; margin-bottom: 4px; }
+  .thumb-minimal .t-line { height: 2px; background: #ddd; border-radius: 1px; margin: 3px 0; }
+  .thumb-minimal .t-line.dark { background: #1B2F5E; width: 55%; height: 3px; }
+  .thumb-minimal .t-line.short { width: 40%; }
+
+  .thumb-executive { background: #1B2F5E; padding: 6px; }
+  .thumb-executive .t-header { border-bottom: 1px solid rgba(201,168,76,0.4); padding-bottom: 4px; margin-bottom: 4px; display: flex; gap: 4px; align-items: center; }
+  .thumb-executive .t-circle { width: 18px; height: 18px; border-radius: 50%; background: #C9A84C; }
+  .thumb-executive .t-line { height: 2px; background: rgba(255,255,255,0.25); border-radius: 1px; margin: 3px 0; }
+  .thumb-executive .t-line.gold { background: #C9A84C; width: 45%; }
+
+  .thumb-creative { background: #fff; padding: 0; overflow: hidden; }
+  .thumb-creative .t-top { background: linear-gradient(135deg, #1B2F5E, #243d7a); height: 35%; display: flex; align-items: flex-end; padding: 4px; }
+  .thumb-creative .t-circle { width: 22px; height: 22px; border-radius: 50%; background: #C9A84C; border: 2px solid white; margin-bottom: -10px; }
+  .thumb-creative .t-body { padding: 12px 6px 4px; }
+  .thumb-creative .t-line { height: 2px; background: #eee; border-radius: 1px; margin: 3px 0; }
+  .thumb-creative .t-line.gold { background: #C9A84C; width: 40%; }
+
+  .thumb-teal { background: #fff; display: flex; flex-direction: column; }
+  .thumb-teal .t-header { background: #0F4C5C; height: 25%; display: flex; align-items: center; padding: 4px 6px; gap: 4px; }
+  .thumb-teal .t-circle { width: 18px; height: 18px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+  .thumb-teal .t-header-text { flex: 1; }
+  .thumb-teal .t-line { height: 2px; border-radius: 1px; margin: 2px 0; }
+  .thumb-teal .t-line.white { background: rgba(255,255,255,0.5); }
+  .thumb-teal .t-body { padding: 4px 6px; }
+  .thumb-teal .t-line.dark { background: #0F4C5C; }
+  .thumb-teal .t-line.light { background: #eee; }
+  .thumb-teal .t-line.accent { background: #C9A84C; width: 40%; }
+
+  /* ─── FORM ─── */
+  .form-block {
+    background: var(--off-white);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+  }
+  .form-group { margin-bottom: 0.875rem; }
+  .form-group:last-child { margin-bottom: 0; }
+  label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  input, textarea, select {
+    width: 100%;
+    padding: 0.6rem 0.875rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    color: var(--text);
+    background: var(--white);
+    transition: var(--transition);
+    outline: none;
+    resize: vertical;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--navy);
+    box-shadow: 0 0 0 3px rgba(27,47,94,0.08);
+  }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+  /* Experience / Education entries */
+  .entry-list { display: flex; flex-direction: column; gap: 0.75rem; }
+  .entry-item {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.875rem;
+    position: relative;
+  }
+  .entry-item .remove-btn {
+    position: absolute;
+    top: 0.5rem; right: 0.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 0.25rem;
+    border-radius: 4px;
+    transition: var(--transition);
+  }
+  .entry-item .remove-btn:hover { color: #ef4444; background: #fef2f2; }
+  .add-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: var(--white);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--navy);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    justify-content: center;
+    transition: var(--transition);
+    font-family: 'Inter', sans-serif;
+  }
+  .add-btn:hover { border-color: var(--navy); background: var(--off-white); }
+
+  /* Skills */
+  .skills-input-wrap { display: flex; gap: 0.5rem; }
+  .skills-input-wrap input { flex: 1; }
+  .skills-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem; }
+  .skill-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: var(--navy);
+    color: var(--white);
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+  }
+  .skill-tag button {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.7);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    font-size: 0.9rem;
+  }
+  .skill-tag button:hover { color: #fff; }
+
+  /* Photo */
+  .photo-upload {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+  }
+  .photo-upload:hover { border-color: var(--gold); background: rgba(201,168,76,0.04); }
+  .photo-upload input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .photo-preview {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    margin: 0 auto 0.5rem;
+    display: block;
+  }
+  .photo-placeholder {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem;
+    color: var(--text-muted);
+  }
+  .photo-upload p { font-size: 0.75rem; color: var(--text-muted); }
+  .photo-upload p strong { color: var(--navy); }
+
+  /* ─── RIGHT PANEL ─── */
+  .panel-right {
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    overflow-y: auto;
+    position: relative;
+  }
+  .preview-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    background: var(--white);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 720px;
+  }
+  .preview-toolbar span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    flex: 1;
+  }
+
+  /* ─── CV PREVIEW WRAPPER ─── */
+  .cv-preview-wrap {
+    width: 100%;
+    max-width: 720px;
+    box-shadow: var(--shadow-lg);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: white;
+  }
+
+  /* ═══════════════════════════════════════
+     CV TEMPLATES
+  ═══════════════════════════════════════ */
+
+  /* ── TEMPLATE 1: CLASSIC ── */
+  .cv-classic {
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+    color: #1A1A2E;
+  }
+  .cv-classic .cv-header {
+    background: var(--navy);
+    color: white;
+    padding: 2.5rem 2.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .cv-classic .cv-photo {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    flex-shrink: 0;
+  }
+  .cv-classic .cv-photo-placeholder {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: rgba(255,255,255,0.5);
+  }
+  .cv-classic .cv-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 0.25rem;
+  }
+  .cv-classic .cv-title {
+    color: var(--gold);
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+  }
+  .cv-classic .cv-contacts {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem;
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.8);
+  }
+  .cv-classic .cv-contacts span { display: flex; align-items: center; gap: 0.3rem; }
+  .cv-classic .cv-body { padding: 2rem 2.5rem; display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+  .cv-classic .cv-section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--navy);
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 0.4rem;
+    margin-bottom: 1rem;
+  }
+  .cv-classic .cv-summary { font-size: 0.88rem; line-height: 1.7; color: #444; }
+  .cv-classic .cv-entry { margin-bottom: 1rem; }
+  .cv-classic .cv-entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.2rem; }
+  .cv-classic .cv-entry-title { font-weight: 600; font-size: 0.9rem; }
+  .cv-classic .cv-entry-date { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+  .cv-classic .cv-entry-sub { font-size: 0.8rem; color: var(--gold); font-weight: 500; margin-bottom: 0.25rem; }
+  .cv-classic .cv-entry-desc { font-size: 0.82rem; color: #555; line-height: 1.6; }
+  .cv-classic .cv-skills-wrap { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .cv-classic .cv-skill {
+    background: var(--navy);
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 500;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+  }
+
+  /* ── TEMPLATE 2: MODERN SIDEBAR ── */
+  .cv-modern {
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+    display: flex;
+    min-height: 800px;
+  }
+  .cv-modern .cv-sidebar {
+    width: 200px;
+    background: var(--navy);
+    color: white;
+    padding: 2rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex-shrink: 0;
+  }
+  .cv-modern .cv-photo {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    margin: 0 auto;
+    display: block;
+  }
+  .cv-modern .cv-photo-placeholder {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto;
+    color: rgba(255,255,255,0.4);
+  }
+  .cv-modern .cv-sidebar-section-title {
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--gold);
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.6rem;
+  }
+  .cv-modern .cv-contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 0.4rem;
+    word-break: break-all;
+  }
+  .cv-modern .cv-skill-bar-wrap { margin-bottom: 0.5rem; }
+  .cv-modern .cv-skill-name { font-size: 0.72rem; color: rgba(255,255,255,0.9); margin-bottom: 0.2rem; }
+  .cv-modern .cv-skill-bar { height: 4px; background: rgba(255,255,255,0.15); border-radius: 2px; }
+  .cv-modern .cv-skill-fill { height: 100%; background: var(--gold); border-radius: 2px; }
+  .cv-modern .cv-main { flex: 1; padding: 2rem 1.75rem; }
+  .cv-modern .cv-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.2;
+  }
+  .cv-modern .cv-title { color: var(--gold); font-size: 0.9rem; font-weight: 500; margin-bottom: 1.25rem; }
+  .cv-modern .cv-section-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--navy);
+    border-left: 3px solid var(--gold);
+    padding-left: 0.5rem;
+    margin-bottom: 0.85rem;
+    margin-top: 1.25rem;
+  }
+  .cv-modern .cv-summary { font-size: 0.83rem; line-height: 1.7; color: #555; }
+  .cv-modern .cv-entry { margin-bottom: 0.875rem; }
+  .cv-modern .cv-entry-title { font-weight: 600; font-size: 0.85rem; color: var(--navy); }
+  .cv-modern .cv-entry-sub { font-size: 0.75rem; color: var(--gold); font-weight: 500; }
+  .cv-modern .cv-entry-date { font-size: 0.7rem; color: var(--text-muted); }
+  .cv-modern .cv-entry-desc { font-size: 0.78rem; color: #666; line-height: 1.6; margin-top: 0.2rem; }
+
+  /* ── TEMPLATE 3: MINIMAL ── */
+  .cv-minimal {
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+    padding: 2.5rem 3rem;
+    color: #1A1A2E;
+  }
+  .cv-minimal .cv-header { border-bottom: 3px solid var(--navy); padding-bottom: 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: flex-end; }
+  .cv-minimal .cv-header-left { display: flex; align-items: center; gap: 1rem; }
+  .cv-minimal .cv-photo {
+    width: 70px; height: 70px;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    border: 2px solid var(--gold);
+  }
+  .cv-minimal .cv-photo-placeholder {
+    width: 70px; height: 70px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted);
+  }
+  .cv-minimal .cv-name { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; color: var(--navy); }
+  .cv-minimal .cv-title { font-size: 0.9rem; color: var(--gold); font-weight: 500; margin-top: 0.2rem; }
+  .cv-minimal .cv-contacts { text-align: right; font-size: 0.75rem; color: var(--text-muted); line-height: 1.8; }
+  .cv-minimal .cv-section { margin-bottom: 1.5rem; }
+  .cv-minimal .cv-section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    margin-bottom: 0.75rem;
+  }
+  .cv-minimal .cv-summary { font-size: 0.85rem; line-height: 1.7; color: #555; }
+  .cv-minimal .cv-entry { display: grid; grid-template-columns: 120px 1fr; gap: 1rem; margin-bottom: 0.875rem; }
+  .cv-minimal .cv-entry-date { font-size: 0.75rem; color: var(--text-muted); padding-top: 0.1rem; }
+  .cv-minimal .cv-entry-title { font-weight: 600; font-size: 0.88rem; }
+  .cv-minimal .cv-entry-sub { font-size: 0.78rem; color: var(--gold); font-weight: 500; }
+  .cv-minimal .cv-entry-desc { font-size: 0.8rem; color: #666; line-height: 1.6; margin-top: 0.2rem; }
+  .cv-minimal .cv-skills-wrap { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .cv-minimal .cv-skill { font-size: 0.75rem; color: var(--navy); border: 1.5px solid var(--navy); padding: 0.2rem 0.7rem; border-radius: 20px; }
+
+  /* ── TEMPLATE 4: EXECUTIVE (dark) ── */
+  .cv-executive {
+    font-family: 'Inter', sans-serif;
+    background: var(--navy);
+    color: white;
+  }
+  .cv-executive .cv-header {
+    padding: 2.5rem;
+    border-bottom: 1px solid rgba(201,168,76,0.25);
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+  }
+  .cv-executive .cv-photo {
+    width: 95px; height: 95px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    flex-shrink: 0;
+  }
+  .cv-executive .cv-photo-placeholder {
+    width: 95px; height: 95px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: rgba(255,255,255,0.3);
+  }
+  .cv-executive .cv-name { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; line-height: 1.2; }
+  .cv-executive .cv-title { color: var(--gold); font-size: 0.95rem; font-weight: 500; margin: 0.3rem 0 0.75rem; }
+  .cv-executive .cv-contacts { display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; font-size: 0.77rem; color: rgba(255,255,255,0.65); }
+  .cv-executive .cv-contacts span { display: flex; align-items: center; gap: 0.3rem; }
+  .cv-executive .cv-body { padding: 2rem 2.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .cv-executive .cv-col-full { grid-column: 1/-1; }
+  .cv-executive .cv-section-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    border-bottom: 1px solid rgba(201,168,76,0.25);
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.875rem;
+  }
+  .cv-executive .cv-summary { font-size: 0.85rem; line-height: 1.7; color: rgba(255,255,255,0.75); }
+  .cv-executive .cv-entry { margin-bottom: 0.875rem; }
+  .cv-executive .cv-entry-title { font-weight: 600; font-size: 0.88rem; color: white; }
+  .cv-executive .cv-entry-sub { font-size: 0.78rem; color: var(--gold); font-weight: 500; }
+  .cv-executive .cv-entry-date { font-size: 0.72rem; color: rgba(255,255,255,0.5); }
+  .cv-executive .cv-entry-desc { font-size: 0.8rem; color: rgba(255,255,255,0.65); line-height: 1.6; margin-top: 0.2rem; }
+  .cv-executive .cv-skill { display: inline-block; background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); font-size: 0.72rem; padding: 0.2rem 0.65rem; border-radius: 20px; margin: 0.2rem 0.2rem 0 0; }
+
+  /* ── TEMPLATE 5: CREATIVE ── */
+  .cv-creative {
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+  }
+  .cv-creative .cv-header {
+    background: linear-gradient(135deg, var(--navy) 60%, #243d7a 100%);
+    padding: 2.5rem 2.5rem 3.5rem;
+    position: relative;
+  }
+  .cv-creative .cv-header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 40px;
+    background: white;
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .cv-creative .cv-header-content { display: flex; align-items: center; gap: 1.5rem; position: relative; z-index: 1; }
+  .cv-creative .cv-photo {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--gold);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .cv-creative .cv-photo-placeholder {
+    width: 90px; height: 90px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    border: 4px solid var(--gold);
+    color: rgba(255,255,255,0.5);
+  }
+  .cv-creative .cv-name { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 700; color: white; line-height: 1.2; }
+  .cv-creative .cv-title { color: var(--gold); font-size: 0.92rem; font-weight: 500; margin-top: 0.25rem; }
+  .cv-creative .cv-body { padding: 2rem 2.5rem; display: grid; grid-template-columns: 1fr 260px; gap: 2rem; }
+  .cv-creative .cv-contacts { display: flex; flex-direction: column; gap: 0.4rem; }
+  .cv-creative .cv-contact-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--text-muted); }
+  .cv-creative .cv-section-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--navy);
+    margin-bottom: 0.875rem;
+    margin-top: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .cv-creative .cv-section-title::before { content: ''; width: 20px; height: 2px; background: var(--gold); }
+  .cv-creative .cv-summary { font-size: 0.85rem; line-height: 1.7; color: #555; }
+  .cv-creative .cv-entry { margin-bottom: 0.875rem; padding-left: 0.875rem; border-left: 2px solid var(--surface); }
+  .cv-creative .cv-entry-title { font-weight: 600; font-size: 0.88rem; color: var(--navy); }
+  .cv-creative .cv-entry-sub { font-size: 0.78rem; color: var(--gold); font-weight: 500; }
+  .cv-creative .cv-entry-date { font-size: 0.72rem; color: var(--text-muted); }
+  .cv-creative .cv-entry-desc { font-size: 0.8rem; color: #666; line-height: 1.6; margin-top: 0.2rem; }
+  .cv-creative .cv-right-panel { }
+  .cv-creative .cv-right-section-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--navy);
+    background: var(--off-white);
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.75rem;
+    margin-top: 1.25rem;
+  }
+  .cv-creative .cv-skill { display: inline-block; background: var(--surface); color: var(--navy); font-size: 0.72rem; padding: 0.25rem 0.65rem; border-radius: 20px; margin: 0.2rem 0.2rem 0 0; font-weight: 500; }
+
+  /* ── TEMPLATE 6: TEAL ACCENT ── */
+  .cv-teal {
+    font-family: 'Inter', sans-serif;
+    background: #fff;
+    color: #1A1A2E;
+  }
+  .cv-teal .cv-header {
+    background: #0F4C5C;
+    color: white;
+    padding: 2rem 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .cv-teal .cv-photo {
+    width: 85px; height: 85px;
+    border-radius: 12px;
+    object-fit: cover;
+    border: 3px solid var(--gold);
+    flex-shrink: 0;
+  }
+  .cv-teal .cv-photo-placeholder {
+    width: 85px; height: 85px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    color: rgba(255,255,255,0.4);
+  }
+  .cv-teal .cv-name { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; }
+  .cv-teal .cv-title { color: var(--gold); font-size: 0.9rem; font-weight: 500; margin: 0.2rem 0 0.6rem; }
+  .cv-teal .cv-contacts { display: flex; flex-wrap: wrap; gap: 0.35rem 1.2rem; font-size: 0.76rem; color: rgba(255,255,255,0.75); }
+  .cv-teal .cv-contacts span { display: flex; align-items: center; gap: 0.3rem; }
+  .cv-teal .cv-body { padding: 1.75rem 2.5rem; display: grid; grid-template-columns: 1fr 180px; gap: 2rem; }
+  .cv-teal .cv-section-title {
+    font-size: 0.67rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #0F4C5C;
+    border-bottom: 2px solid #0F4C5C;
+    padding-bottom: 0.35rem;
+    margin-bottom: 0.875rem;
+    margin-top: 1.1rem;
+  }
+  .cv-teal .cv-section-title:first-child { margin-top: 0; }
+  .cv-teal .cv-summary { font-size: 0.85rem; line-height: 1.7; color: #555; }
+  .cv-teal .cv-entry { margin-bottom: 0.875rem; }
+  .cv-teal .cv-entry-title { font-weight: 600; font-size: 0.88rem; color: #0F4C5C; }
+  .cv-teal .cv-entry-sub { font-size: 0.78rem; color: var(--gold); font-weight: 500; }
+  .cv-teal .cv-entry-date { font-size: 0.72rem; color: var(--text-muted); }
+  .cv-teal .cv-entry-desc { font-size: 0.8rem; color: #666; line-height: 1.6; margin-top: 0.2rem; }
+  .cv-teal .cv-right-section-title {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: white;
+    background: #0F4C5C;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 0.6rem;
+    margin-top: 1rem;
+  }
+  .cv-teal .cv-right-section-title:first-child { margin-top: 0; }
+  .cv-teal .cv-skill { display: block; font-size: 0.75rem; color: #0F4C5C; padding: 0.2rem 0; border-bottom: 1px solid var(--border); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .app-layout { grid-template-columns: 1fr; }
+    .panel-right { display: none; }
+    .panel-left { border-right: none; }
+    .show-preview-btn { display: flex !important; }
+  }
+  @media (max-width: 480px) {
+    header { padding: 0 1rem; }
+    .logo { font-size: 1.1rem; }
+    .form-row { grid-template-columns: 1fr; }
+    .template-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ─── MODAL (mobile preview) ─── */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-content {
+    background: var(--surface);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  .modal-close {
+    position: sticky;
+    top: 0;
+    background: var(--white);
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    z-index: 1;
+  }
+  .modal-close span { font-size: 0.85rem; font-weight: 600; color: var(--navy); }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 2rem; right: 2rem;
+    background: var(--navy);
+    color: white;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: #16a34a; }
+  .toast.error { background: #dc2626; }
+
+  /* show preview button (mobile) */
+  .show-preview-btn { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ─── -->
+<header>
+  <div class="logo">Folia<span>Rise</span></div>
+  <div class="header-actions">
+    <button class="btn btn-outline show-preview-btn" onclick="openPreview()">
+      <i data-lucide="eye" style="width:15px;height:15px"></i> Preview
+    </button>
+    <button class="btn btn-gold" onclick="downloadPDF()">
+      <i data-lucide="download" style="width:15px;height:15px"></i> Download PDF
+    </button>
+  </div>
+</header>
+
+<!-- ─── MAIN LAYOUT ─── -->
+<div class="app-layout">
+
+  <!-- ════ LEFT PANEL ════ -->
+  <div class="panel-left">
+
+    <!-- TEMPLATES -->
+    <div>
+      <div class="section-title"><i data-lucide="layout-template" style="width:13px;height:13px"></i> Choose Template</div>
+      <div class="template-grid">
+        <div class="template-card active" onclick="selectTemplate('classic', this)">
+          <div class="template-thumb thumb-classic">
+            <div class="t-header"><div class="t-circle"></div></div>
+            <div class="t-body">
+              <div class="t-line gold"></div>
+              <div class="t-line"></div>
+              <div class="t-line short"></div>
+              <div class="t-line"></div>
+              <div class="t-line short"></div>
+            </div>
+          </div>
+          <div class="template-label">Classic</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate('modern', this)">
+          <div class="template-thumb thumb-modern">
+            <div class="t-sidebar">
+              <div class="t-circle"></div>
+              <div class="t-line"></div>
+              <div class="t-line"></div>
+              <div class="t-line"></div>
+            </div>
+            <div class="t-main">
+              <div class="t-line gold"></div>
+              <div class="t-line"></div>
+              <div class="t-line"></div>
+              <div class="t-line"></div>
+            </div>
+          </div>
+          <div class="template-label">Modern</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate('minimal', this)">
+          <div class="template-thumb thumb-minimal">
+            <div class="t-top">
+              <div class="t-line dark"></div>
+              <div class="t-line short"></div>
+            </div>
+            <div class="t-line"></div>
+            <div class="t-line short"></div>
+            <div class="t-line"></div>
+            <div class="t-line short"></div>
+          </div>
+          <div class="template-label">Minimal</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate('executive', this)">
+          <div class="template-thumb thumb-executive">
+            <div class="t-header">
+              <div class="t-circle"></div>
+              <div style="flex:1"><div class="t-line gold"></div><div class="t-line"></div></div>
+            </div>
+            <div class="t-line"></div>
+            <div class="t-line short"></div>
+            <div class="t-line"></div>
+          </div>
+          <div class="template-label">Executive</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate('creative', this)">
+          <div class="template-thumb thumb-creative">
+            <div class="t-top"><div class="t-circle"></div></div>
+            <div class="t-body">
+              <div class="t-line gold"></div>
+              <div class="t-line"></div>
+              <div class="t-line short"></div>
+            </div>
+          </div>
+          <div class="template-label">Creative</div>
+        </div>
+        <div class="template-card" onclick="selectTemplate('teal', this)">
+          <div class="template-thumb thumb-teal">
+            <div class="t-header">
+              <div class="t-circle"></div>
+              <div class="t-header-text">
+                <div class="t-line white"></div>
+                <div class="t-line white short"></div>
+              </div>
+            </div>
+            <div class="t-body">
+              <div class="t-line accent"></div>
+              <div class="t-line dark"></div>
+              <div class="t-line light"></div>
+            </div>
+          </div>
+          <div class="template-label">Teal</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERSONAL INFO -->
+    <div>
+      <div class="section-title"><i data-lucide="user" style="width:13px;height:13px"></i> Personal Info</div>
+      <div class="form-block">
+        <!-- Photo -->
+        <div class="form-group">
+          <label>Profile Photo</label>
+          <div class="photo-upload" id="photoUploadArea">
+            <input type="file" accept="image/*" onchange="handlePhotoUpload(event)" id="photoInput">
+            <div id="photoPlaceholder">
+              <div class="photo-placeholder"><i data-lucide="camera" style="width:24px;height:24px"></i></div>
+              <p><strong>Click to upload</strong> your photo</p>
+              <p>JPG, PNG — max 5MB</p>
+            </div>
+            <img id="photoPreview" class="photo-preview" style="display:none" alt="Profile">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="firstName" placeholder="João" oninput="updateCV()">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="lastName" placeholder="Machava" oninput="updateCV()">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Job Title</label>
+          <input type="text" id="jobTitle" placeholder="Senior Software Engineer" oninput="updateCV()">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="email" placeholder="joao@email.com" oninput="updateCV()">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="text" id="phone" placeholder="+258 84 000 0000" oninput="updateCV()">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="location" placeholder="Maputo, Mozambique" oninput="updateCV()">
+          </div>
+          <div class="form-group">
+            <label>LinkedIn / Website</label>
+            <input type="text" id="website" placeholder="linkedin.com/in/joao" oninput="updateCV()">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Professional Summary</label>
+          <textarea id="summary" rows="3" placeholder="A brief, powerful summary of who you are and what you bring..." oninput="updateCV()"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div>
+      <div class="section-title"><i data-lucide="briefcase" style="width:13px;height:13px"></i> Work Experience</div>
+      <div class="entry-list" id="expList"></div>
+      <button class="add-btn" onclick="addEntry('exp')">
+        <i data-lucide="plus" style="width:14px;height:14px"></i> Add Experience
+      </button>
+    </div>
+
+    <!-- EDUCATION -->
+    <div>
+      <div class="section-title"><i data-lucide="graduation-cap" style="width:13px;height:13px"></i> Education</div>
+      <div class="entry-list" id="eduList"></div>
+      <button class="add-btn" onclick="addEntry('edu')">
+        <i data-lucide="plus" style="width:14px;height:14px"></i> Add Education
+      </button>
+    </div>
+
+    <!-- SKILLS -->
+    <div>
+      <div class="section-title"><i data-lucide="zap" style="width:13px;height:13px"></i> Skills</div>
+      <div class="form-block">
+        <div class="skills-input-wrap">
+          <input type="text" id="skillInput" placeholder="e.g. Project Management" onkeydown="if(event.key==='Enter'){addSkill();event.preventDefault()}">
+          <button class="btn btn-primary" onclick="addSkill()" style="white-space:nowrap">
+            <i data-lucide="plus" style="width:14px;height:14px"></i>
+          </button>
+        </div>
+        <div class="skills-tags" id="skillsTags"></div>
+      </div>
+    </div>
+
+  </div>
+  <!-- ════ END LEFT PANEL ════ -->
+
+  <!-- ════ RIGHT PANEL (PREVIEW) ════ -->
+  <div class="panel-right">
+    <div class="preview-toolbar">
+      <span><i data-lucide="eye" style="width:13px;height:13px;display:inline;vertical-align:middle;margin-right:4px"></i> Live Preview</span>
+      <button class="btn btn-outline" onclick="downloadPDF()">
+        <i data-lucide="download" style="width:14px;height:14px"></i> Download PDF
+      </button>
+    </div>
+    <div class="cv-preview-wrap" id="cvPreview">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+  <!-- ════ END RIGHT PANEL ════ -->
+
+</div>
+
+<!-- ─── MOBILE PREVIEW MODAL ─── -->
+<div class="modal-overlay" id="previewModal">
+  <div class="modal-content">
+    <div class="modal-close">
+      <span>CV Preview</span>
+      <button class="btn btn-outline" onclick="closePreview()" style="padding:0.4rem 0.75rem">
+        <i data-lucide="x" style="width:14px;height:14px"></i> Close
+      </button>
+    </div>
+    <div style="padding:1rem" id="modalCV"></div>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════
+let state = {
+  template: 'classic',
+  photo: null,
+  firstName: '', lastName: '', jobTitle: '',
+  email: '', phone: '', location: '', website: '',
+  summary: '',
+  experience: [],
+  education: [],
+  skills: []
+};
+
+// ═══════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  lucide.createIcons();
+  addEntry('exp');
+  addEntry('edu');
+  updateCV();
+});
+
+// ═══════════════════════════════════════
+//  TEMPLATE SELECTION
+// ═══════════════════════════════════════
+function selectTemplate(name, el) {
+  document.querySelectorAll('.template-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  state.template = name;
+  updateCV();
+}
+
+// ═══════════════════════════════════════
+//  PHOTO UPLOAD
+// ═══════════════════════════════════════
+function handlePhotoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('Photo must be under 5MB', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    state.photo = ev.target.result;
+    document.getElementById('photoPlaceholder').style.display = 'none';
+    const preview = document.getElementById('photoPreview');
+    preview.src = state.photo;
+    preview.style.display = 'block';
+    updateCV();
+  };
+  reader.readAsDataURL(file);
+}
+
+// ═══════════════════════════════════════
+//  ENTRIES (Experience / Education)
+// ═══════════════════════════════════════
+function addEntry(type) {
+  const id = Date.now();
+  const isExp = type === 'exp';
+  const list = document.getElementById(isExp ? 'expList' : 'eduList');
+  const arr = isExp ? state.experience : state.education;
+  const entry = { id, title: '', org: '', date: '', desc: '' };
+  arr.push(entry);
+
+  const div = document.createElement('div');
+  div.className = 'entry-item';
+  div.id = `entry-${id}`;
+  div.innerHTML = `
+    <button class="remove-btn" onclick="removeEntry('${type}',${id})">
+      <i data-lucide="x" style="width:13px;height:13px"></i>
+    </button>
+    <div class="form-group">
+      <label>${isExp ? 'Job Title' : 'Degree / Qualification'}</label>
+      <input type="text" placeholder="${isExp ? 'Marketing Manager' : 'BSc Computer Science'}"
+        oninput="updateEntry('${type}',${id},'title',this.value)">
+    </div>
+    <div class="form-group">
+      <label>${isExp ? 'Company' : 'Institution'}</label>
+      <input type="text" placeholder="${isExp ? 'Acme Corp, Maputo' : 'UEM, Maputo'}"
+        oninput="updateEntry('${type}',${id},'org',this.value)">
+    </div>
+    <div class="form-group">
+      <label>Period</label>
+      <input type="text" placeholder="Jan 2021 – Present"
+        oninput="updateEntry('${type}',${id},'date',this.value)">
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <textarea rows="2" placeholder="${isExp ? 'Key achievements and responsibilities...' : 'Relevant modules, thesis, honours...'}"
+        oninput="updateEntry('${type}',${id},'desc',this.value)"></textarea>
+    </div>
+  `;
+  list.appendChild(div);
+  lucide.createIcons();
+}
+
+function updateEntry(type, id, field, value) {
+  const arr = type === 'exp' ? state.experience : state.education;
+  const entry = arr.find(e => e.id === id);
+  if (entry) { entry[field] = value; updateCV(); }
+}
+
+function removeEntry(type, id) {
+  const arr = type === 'exp' ? state.experience : state.education;
+  const i = arr.findIndex(e => e.id === id);
+  if (i > -1) arr.splice(i, 1);
+  document.getElementById(`entry-${id}`)?.remove();
+  updateCV();
+}
+
+// ═══════════════════════════════════════
+//  SKILLS
+// ═══════════════════════════════════════
+function addSkill() {
+  const input = document.getElementById('skillInput');
+  const val = input.value.trim();
+  if (!val || state.skills.includes(val)) return;
+  state.skills.push(val);
+  input.value = '';
+  renderSkillTags();
+  updateCV();
+}
+
+function removeSkill(skill) {
+  state.skills = state.skills.filter(s => s !== skill);
+  renderSkillTags();
+  updateCV();
+}
+
+function renderSkillTags() {
+  const wrap = document.getElementById('skillsTags');
+  wrap.innerHTML = state.skills.map(s => `
+    <span class="skill-tag">${s}
+      <button onclick="removeSkill('${s}')" title="Remove">×</button>
+    </span>
+  `).join('');
+}
+
+// ═══════════════════════════════════════
+//  READ FORM
+// ═══════════════════════════════════════
+function readForm() {
+  state.firstName = document.getElementById('firstName').value;
+  state.lastName  = document.getElementById('lastName').value;
+  state.jobTitle  = document.getElementById('jobTitle').value;
+  state.email     = document.getElementById('email').value;
+  state.phone     = document.getElementById('phone').value;
+  state.location  = document.getElementById('location').value;
+  state.website   = document.getElementById('website').value;
+  state.summary   = document.getElementById('summary').value;
+}
+
+function updateCV() {
+  readForm();
+  const html = renderTemplate(state.template);
+  document.getElementById('cvPreview').innerHTML = html;
+  const modal = document.getElementById('modalCV');
+  if (modal) modal.innerHTML = html;
+}
+
+// ═══════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════
+function fullName() {
+  const n = `${state.firstName} ${state.lastName}`.trim();
+  return n || 'Your Name';
+}
+function photoEl(cls, size = 90, radius = '50%') {
+  if (state.photo) return `<img src="${state.photo}" class="${cls}" style="width:${size}px;height:${size}px;border-radius:${radius};object-fit:cover" alt="Profile Photo">`;
+  return `<div class="${cls}" style="width:${size}px;height:${size}px;border-radius:${radius};background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.4)"><svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><circle cx='12' cy='8' r='4'/><path d='M4 20c0-4 3.6-7 8-7s8 3 8 7'/></svg></div>`;
+}
+function photoElLight(cls, size = 70, radius = '8px') {
+  if (state.photo) return `<img src="${state.photo}" class="${cls}" style="width:${size}px;height:${size}px;border-radius:${radius};object-fit:cover;border:2px solid #C9A84C" alt="Profile Photo">`;
+  return `<div class="${cls}" style="width:${size}px;height:${size}px;border-radius:${radius};background:#EEF0F7;display:flex;align-items:center;justify-content:center;color:#9CA3AF"><svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.5'><circle cx='12' cy='8' r='4'/><path d='M4 20c0-4 3.6-7 8-7s8 3 8 7'/></svg></div>`;
+}
+function expHTML(cls) {
+  if (!state.experience.length) return '<p style="font-size:0.8rem;color:#999;font-style:italic">No experience added yet.</p>';
+  return state.experience.map(e => `
+    <div class="${cls}cv-entry">
+      <div class="${cls}cv-entry-header" style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="${cls}cv-entry-title">${e.title || 'Job Title'}</div>
+          <div class="${cls}cv-entry-sub">${e.org || 'Company'}</div>
+        </div>
+        <div class="${cls}cv-entry-date">${e.date || 'Period'}</div>
+      </div>
+      ${e.desc ? `<div class="${cls}cv-entry-desc">${e.desc}</div>` : ''}
+    </div>
+  `).join('');
+}
+function eduHTML(cls) {
+  if (!state.education.length) return '<p style="font-size:0.8rem;color:#999;font-style:italic">No education added yet.</p>';
+  return state.education.map(e => `
+    <div class="${cls}cv-entry">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="${cls}cv-entry-title">${e.title || 'Degree'}</div>
+          <div class="${cls}cv-entry-sub">${e.org || 'Institution'}</div>
+        </div>
+        <div class="${cls}cv-entry-date">${e.date || 'Period'}</div>
+      </div>
+      ${e.desc ? `<div class="${cls}cv-entry-desc">${e.desc}</div>` : ''}
+    </div>
+  `).join('');
+}
+function skillsHTML(cls, style = 'pill') {
+  if (!state.skills.length) return '<p style="font-size:0.75rem;color:#999;font-style:italic">No skills added.</p>';
+  if (style === 'pill') return `<div class="${cls}cv-skills-wrap">${state.skills.map(s=>`<span class="${cls}cv-skill">${s}</span>`).join('')}</div>`;
+  if (style === 'bar') return state.skills.map(s=>`<div class="cv-modern cv-skill-bar-wrap"><div class="cv-modern cv-skill-name">${s}</div><div class="cv-modern cv-skill-bar"><div class="cv-modern cv-skill-fill" style="width:${70+Math.random()*25}%"></div></div></div>`).join('');
+  if (style === 'list') return state.skills.map(s=>`<div class="${cls}cv-skill">${s}</div>`).join('');
+  return '';
+}
+
+// ═══════════════════════════════════════
+//  TEMPLATE RENDERERS
+// ═══════════════════════════════════════
+function renderTemplate(t) {
+  switch(t) {
+    case 'classic':   return renderClassic();
+    case 'modern':    return renderModern();
+    case 'minimal':   return renderMinimal();
+    case 'executive': return renderExecutive();
+    case 'creative':  return renderCreative();
+    case 'teal':      return renderTeal();
+    default:          return renderClassic();
+  }
+}
+
+function renderClassic() {
+  return `<div class="cv-classic">
+    <div class="cv-header">
+      ${photoEl('cv-photo')}
+      <div>
+        <div class="cv-name">${fullName()}</div>
+        <div class="cv-title">${state.jobTitle || 'Professional Title'}</div>
+        <div class="cv-contacts">
+          ${state.email ? `<span>${state.email}</span>` : ''}
+          ${state.phone ? `<span>${state.phone}</span>` : ''}
+          ${state.location ? `<span>${state.location}</span>` : ''}
+          ${state.website ? `<span>${state.website}</span>` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="cv-body">
+      ${state.summary ? `<div><div class="cv-section-title">Profile</div><div class="cv-summary">${state.summary}</div></div>` : ''}
+      <div><div class="cv-section-title">Work Experience</div>${expHTML('cv-classic ')}</div>
+      <div><div class="cv-section-title">Education</div>${eduHTML('cv-classic ')}</div>
+      ${state.skills.length ? `<div><div class="cv-section-title">Skills</div>${skillsHTML('cv-classic ', 'pill')}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderModern() {
+  const skillBars = state.skills.length
+    ? state.skills.map(s => `
+        <div style="margin-bottom:0.5rem">
+          <div style="font-size:0.72rem;color:rgba(255,255,255,0.9);margin-bottom:0.2rem">${s}</div>
+          <div style="height:4px;background:rgba(255,255,255,0.15);border-radius:2px">
+            <div style="height:100%;background:#C9A84C;border-radius:2px;width:${65+Math.floor(Math.random()*30)}%"></div>
+          </div>
+        </div>`).join('')
+    : '<p style="font-size:0.72rem;color:rgba(255,255,255,0.5);font-style:italic">No skills yet</p>';
+
+  return `<div class="cv-modern">
+    <div class="cv-sidebar">
+      ${photoEl('cv-photo', 80)}
+      <div>
+        <div class="cv-sidebar-section-title">Contact</div>
+        ${state.email ? `<div class="cv-contact-item">${state.email}</div>` : ''}
+        ${state.phone ? `<div class="cv-contact-item">${state.phone}</div>` : ''}
+        ${state.location ? `<div class="cv-contact-item">${state.location}</div>` : ''}
+        ${state.website ? `<div class="cv-contact-item">${state.website}</div>` : ''}
+      </div>
+      <div>
+        <div class="cv-sidebar-section-title">Skills</div>
+        ${skillBars}
+      </div>
+    </div>
+    <div class="cv-main">
+      <div class="cv-name">${fullName()}</div>
+      <div class="cv-title">${state.jobTitle || 'Professional Title'}</div>
+      ${state.summary ? `<div class="cv-section-title">About Me</div><div class="cv-summary">${state.summary}</div>` : ''}
+      <div class="cv-section-title">Experience</div>
+      ${expHTML('cv-modern ')}
+      <div class="cv-section-title">Education</div>
+      ${eduHTML('cv-modern ')}
+    </div>
+  </div>`;
+}
+
+function renderMinimal() {
+  return `<div class="cv-minimal">
+    <div class="cv-header">
+      <div class="cv-header-left">
+        ${photoElLight('cv-photo-min', 70, '8px')}
+        <div>
+          <div class="cv-name">${fullName()}</div>
+          <div class="cv-title">${state.jobTitle || 'Professional Title'}</div>
+        </div>
+      </div>
+      <div class="cv-contacts" style="text-align:right;font-size:0.75rem;color:#6B7280;line-height:1.8">
+        ${state.email ? `<div>${state.email}</div>` : ''}
+        ${state.phone ? `<div>${state.phone}</div>` : ''}
+        ${state.location ? `<div>${state.location}</div>` : ''}
+        ${state.website ? `<div>${state.website}</div>` : ''}
+      </div>
+    </div>
+    ${state.summary ? `<div class="cv-section"><div class="cv-section-title">Profile</div><div class="cv-summary">${state.summary}</div></div>` : ''}
+    <div class="cv-section">
+      <div class="cv-section-title">Experience</div>
+      ${state.experience.map(e=>`
+        <div class="cv-entry">
+          <div class="cv-entry-date">${e.date||'Period'}</div>
+          <div>
+            <div class="cv-entry-title">${e.title||'Job Title'}</div>
+            <div class="cv-entry-sub">${e.org||'Company'}</div>
+            ${e.desc?`<div class="cv-entry-desc">${e.desc}</div>`:''}
+          </div>
+        </div>`).join('') || '<p style="font-size:0.8rem;color:#999;font-style:italic;grid-column:1/-1">No experience added.</p>'}
+    </div>
+    <div class="cv-section">
+      <div class="cv-section-title">Education</div>
+      ${state.education.map(e=>`
+        <div class="cv-entry">
+          <div class="cv-entry-date">${e.date||'Period'}</div>
+          <div>
+            <div class="cv-entry-title">${e.title||'Degree'}</div>
+            <div class="cv-entry-sub">${e.org||'Institution'}</div>
+            ${e.desc?`<div class="cv-entry-desc">${e.desc}</div>`:''}
+          </div>
+        </div>`).join('') || '<p style="font-size:0.8rem;color:#999;font-style:italic;grid-column:1/-1">No education added.</p>'}
+    </div>
+    ${state.skills.length ? `<div class="cv-section"><div class="cv-section-title">Skills</div>${skillsHTML('cv-minimal ', 'pill')}</div>` : ''}
+  </div>`;
+}
+
+function renderExecutive() {
+  return `<div class="cv-executive">
+    <div class="cv-header">
+      ${photoEl('cv-exec-photo', 95)}
+      <div>
+        <div class="cv-name">${fullName()}</div>
+        <div class="cv-title">${state.jobTitle || 'Executive Title'}</div>
+        <div class="cv-contacts">
+          ${state.email ? `<span>${state.email}</span>` : ''}
+          ${state.phone ? `<span>${state.phone}</span>` : ''}
+          ${state.location ? `<span>${state.location}</span>` : ''}
+          ${state.website ? `<span>${state.website}</span>` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="cv-body">
+      ${state.summary ? `<div class="cv-col-full"><div class="cv-section-title">Executive Profile</div><div class="cv-summary">${state.summary}</div></div>` : ''}
+      <div>
+        <div class="cv-section-title">Experience</div>
+        ${expHTML('cv-executive ')}
+      </div>
+      <div>
+        <div class="cv-section-title">Education</div>
+        ${eduHTML('cv-executive ')}
+        ${state.skills.length ? `<div class="cv-section-title" style="margin-top:1.25rem">Skills</div><div>${state.skills.map(s=>`<span class="cv-skill">${s}</span>`).join('')}</div>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderCreative() {
+  return `<div class="cv-creative">
+    <div class="cv-header">
+      <div class="cv-header-content">
+        ${photoEl('cv-creative-photo', 90)}
+        <div>
+          <div class="cv-name">${fullName()}</div>
+          <div class="cv-title">${state.jobTitle || 'Creative Professional'}</div>
+        </div>
+      </div>
+    </div>
+    <div class="cv-body" style="padding-top:1.5rem">
+      <div>
+        ${state.summary ? `<div class="cv-section-title">About</div><div class="cv-summary">${state.summary}</div>` : ''}
+        <div class="cv-section-title">Experience</div>
+        ${expHTML('cv-creative ')}
+        <div class="cv-section-title">Education</div>
+        ${eduHTML('cv-creative ')}
+      </div>
+      <div class="cv-right-panel">
+        <div class="cv-right-section-title">Contact</div>
+        ${state.email ? `<div class="cv-contact-item"><span>${state.email}</span></div>` : ''}
+        ${state.phone ? `<div class="cv-contact-item"><span>${state.phone}</span></div>` : ''}
+        ${state.location ? `<div class="cv-contact-item"><span>${state.location}</span></div>` : ''}
+        ${state.website ? `<div class="cv-contact-item"><span>${state.website}</span></div>` : ''}
+        ${state.skills.length ? `<div class="cv-right-section-title" style="margin-top:1.25rem">Skills</div><div>${state.skills.map(s=>`<span class="cv-skill">${s}</span>`).join('')}</div>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderTeal() {
+  return `<div class="cv-teal">
+    <div class="cv-header">
+      ${photoEl('cv-teal-photo', 85, '12px')}
+      <div>
+        <div class="cv-name">${fullName()}</div>
+        <div class="cv-title">${state.jobTitle || 'Professional Title'}</div>
+        <div class="cv-contacts">
+          ${state.email ? `<span>${state.email}</span>` : ''}
+          ${state.phone ? `<span>${state.phone}</span>` : ''}
+          ${state.location ? `<span>${state.location}</span>` : ''}
+          ${state.website ? `<span>${state.website}</span>` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="cv-body">
+      <div>
+        ${state.summary ? `<div class="cv-section-title" style="margin-top:0">Profile</div><div class="cv-summary">${state.summary}</div>` : ''}
+        <div class="cv-section-title">Experience</div>
+        ${expHTML('cv-teal ')}
+        <div class="cv-section-title">Education</div>
+        ${eduHTML('cv-teal ')}
+      </div>
+      <div>
+        <div class="cv-right-section-title" style="margin-top:0">Contact</div>
+        ${state.email ? `<div style="font-size:0.75rem;color:#555;margin-bottom:0.3rem">${state.email}</div>` : ''}
+        ${state.phone ? `<div style="font-size:0.75rem;color:#555;margin-bottom:0.3rem">${state.phone}</div>` : ''}
+        ${state.location ? `<div style="font-size:0.75rem;color:#555;margin-bottom:0.3rem">${state.location}</div>` : ''}
+        ${state.website ? `<div style="font-size:0.75rem;color:#555;margin-bottom:0.3rem">${state.website}</div>` : ''}
+        ${state.skills.length ? `<div class="cv-right-section-title">Skills</div>${state.skills.map(s=>`<div class="cv-skill">${s}</div>`).join('')}` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════
+//  PDF DOWNLOAD
+// ═══════════════════════════════════════
+function downloadPDF() {
+  showToast('Preparing your PDF...', '');
+  const element = document.getElementById('cvPreview').cloneNode(true);
+  const name = fullName().replace(/\s+/g, '_') || 'CV';
+  const opt = {
+    margin: 0,
+    filename: `${name}_CV.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save()
+    .then(() => showToast('PDF downloaded successfully!', 'success'))
+    .catch(() => showToast('Something went wrong. Try again.', 'error'));
+}
+
+// ═══════════════════════════════════════
+//  MOBILE PREVIEW
+// ═══════════════════════════════════════
+function openPreview() {
+  updateCV();
+  document.getElementById('previewModal').classList.add('open');
+}
+function closePreview() {
+  document.getElementById('previewModal').classList.remove('open');
+}
+
+// ═══════════════════════════════════════
+//  TOAST
+// ═══════════════════════════════════════
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type}`;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
