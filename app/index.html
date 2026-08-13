@@ -1085,7 +1085,6 @@
         total: increment(1)
       }).catch(function(e) { console.warn('Firestore increment failed:', e); });
     };
-window._firestoreDb = db; // ← make db available to the rest of the page
 
     // ── LIVE DOWNLOAD COUNT ──
     // stats/downloads has: { total: <number including old version downloads> }
@@ -1127,23 +1126,8 @@ window._firestoreDb = db; // ← make db available to the rest of the page
     subject:    'Novo Download — English Master — ' + now,
     message:    'NOVO DOWNLOAD — ENGLISH MASTER\n\nFonte: ' + source + '\nData/Hora: ' + now + '\nFicheiro: English_Master.apk\nVersão: v3.1.0'
   }).catch(function() {});
-
-  // ── Also update Firestore download counter ──
-  import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js')
-    .then(function(fs) {
-      var db = window._firestoreDb;
-      if (!db) return;
-      var ref = fs.doc(db, 'stats', 'downloads');
-      fs.runTransaction(db, function(tx) {
-        return tx.get(ref).then(function(snap) {
-          var current = snap.exists() ? (snap.data().total || 0) : 0;
-          tx.set(ref, { total: current + 1 });
-        });
-      }).catch(function() {});
-    });
 }
-
-    // ── STATIC COUNTUP (rating + reviews) ──
+// ── STATIC COUNTUP (rating + reviews) ──
     function countUp(el) {
       var target = parseFloat(el.dataset.target);
       var isDec  = el.dataset.dec === '1';
