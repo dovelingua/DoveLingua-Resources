@@ -1,75 +1,403 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>A iniciar download — English Dove</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:sans-serif;background:#0B1D3A;display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:20px;padding:24px;}
-.icon{width:80px;height:80px;border-radius:18px;display:block;margin:0 auto;}
-.title{color:white;font-size:1.1rem;font-weight:700;text-align:center;}
-.sub{color:rgba(255,255,255,0.5);font-size:0.8rem;text-align:center;line-height:1.6;}
-.spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,0.15);border-top-color:#F5C842;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;}
-@keyframes spin{to{transform:rotate(360deg)}}
-.manual{margin-top:10px;color:rgba(255,255,255,0.4);font-size:0.72rem;text-align:center;}
-.manual a{color:#F5C842;text-decoration:none;font-weight:700;}
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>A iniciar download — English Master</title>
+  <meta name="robots" content="noindex, nofollow"/>
+  <link rel="icon" type="image/png" href="https://download.dovelingua.com/assets/images/logo-icon.png"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy:      #0B2E73;
+      --navy-dark: #071E52;
+      --gold:      #C9971A;
+      --gold-bright:#E6B020;
+      --green:     #1A7A4A;
+      --font-head: 'Playfair Display', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-body);
+      background: linear-gradient(160deg, var(--navy-dark) 0%, var(--navy) 60%, #0D3A8C 100%);
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 0;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+      position: relative; overflow: hidden;
+    }
+
+    /* dot pattern */
+    body::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle, rgba(201,151,26,0.07) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 32px 32px, 64px 64px;
+      background-position: 0 0, 16px 16px;
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative; z-index: 1;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(201,151,26,0.2);
+      border-radius: 24px;
+      padding: 36px 28px 32px;
+      max-width: 360px; width: 100%;
+      text-align: center;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+    }
+
+    .app-icon {
+      width: 80px; height: 80px; border-radius: 20px;
+      margin: 0 auto 16px; display: block;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.3), 0 0 0 2px rgba(201,151,26,0.3);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 12px 36px rgba(0,0,0,0.3), 0 0 0 2px rgba(201,151,26,0.3); }
+      50%      { box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 0 4px rgba(201,151,26,0.5); }
+    }
+
+    .app-name {
+      font-family: var(--font-head);
+      font-size: 1.5rem; font-weight: 900;
+      color: white; margin-bottom: 4px; line-height: 1.1;
+    }
+    .app-name span { color: var(--gold-bright); }
+
+    .app-sub {
+      font-size: 0.65rem; color: rgba(255,255,255,0.4);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      margin-bottom: 28px;
+    }
+
+    .status-label {
+      font-size: 0.95rem; font-weight: 700; color: white;
+      margin-bottom: 20px; min-height: 24px;
+    }
+
+    /* spinner */
+    .spinner-wrap { display: flex; justify-content: center; margin-bottom: 20px; }
+    .spinner {
+      width: 42px; height: 42px;
+      border: 3px solid rgba(255,255,255,0.12);
+      border-top-color: var(--gold-bright);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* progress bar */
+    .progress-wrap {
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px; height: 4px;
+      overflow: hidden; margin-bottom: 8px;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--gold), var(--gold-bright), white);
+      border-radius: 20px;
+      transition: width 0.4s ease;
+    }
+    .progress-pct {
+      font-size: 0.65rem; color: rgba(255,255,255,0.35);
+      margin-bottom: 24px; text-align: right;
+    }
+
+    /* info pills */
+    .info-pills {
+      display: flex; justify-content: center; gap: 8px;
+      flex-wrap: wrap; margin-bottom: 24px;
+    }
+    .info-pill {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px; padding: 4px 11px;
+      font-size: 0.67rem; color: rgba(255,255,255,0.6);
+    }
+
+    /* success state */
+    .success-icon {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: rgba(26,122,74,0.2);
+      border: 2px solid rgba(26,122,74,0.5);
+      display: none; align-items: center; justify-content: center;
+      margin: 0 auto 16px; font-size: 1.5rem;
+    }
+    .success-icon.show { display: flex; }
+
+    /* manual link */
+    .manual {
+      font-size: 0.72rem; color: rgba(255,255,255,0.35);
+      margin-top: 4px; line-height: 1.7;
+    }
+    .manual a { color: var(--gold-bright); text-decoration: none; font-weight: 700; }
+    .manual a:hover { text-decoration: underline; }
+
+    /* divider */
+    .divider { height: 1px; background: rgba(255,255,255,0.08); margin: 24px 0; }
+
+    /* community section */
+    .comm-title {
+      font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.5);
+      text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;
+    }
+    .comm-links { display: flex; flex-direction: column; gap: 8px; }
+    .comm-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 12px;
+      text-decoration: none; font-size: 0.8rem; font-weight: 600;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .comm-link:hover { opacity: 0.88; transform: translateY(-1px); }
+    .comm-link.wa  { background: #25D366; color: white; }
+    .comm-link.wa2 { background: #128C7E; color: white; }
+    .comm-link.ch  { background: #075E54; color: white; }
+    .comm-link.ch2 { background: rgba(11,46,115,0.7); border: 1px solid rgba(201,151,26,0.3); color: white; }
+    .comm-link-ico {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .comm-link-body { flex: 1; text-align: left; }
+    .comm-link-title { display: block; font-weight: 700; font-size: 0.78rem; }
+    .comm-link-sub { display: block; font-size: 0.62rem; opacity: 0.7; margin-top: 1px; }
+    .comm-group-label {
+      font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.09em; color: rgba(255,255,255,0.35);
+      padding: 6px 0 4px; text-align: left;
+    }
+
+    /* dovelingua logo bottom */
+    .dl-footer {
+      position: relative; z-index: 1;
+      margin-top: 24px; text-align: center;
+    }
+    .dl-footer img {
+      height: 28px; opacity: 0.5;
+      filter: brightness(0) invert(1);
+    }
+    .dl-footer-copy {
+      font-size: 0.6rem; color: rgba(255,255,255,0.2);
+      margin-top: 6px;
+    }
+  </style>
 </head>
 <body>
-<img class="icon" src="https://download.dovelingua.com/English%20Dove%20App/Logo%20-%20icon.png" alt="English Dove"/>
-<div class="title">A preparar o teu download...</div>
-<div class="spinner"></div>
-<div class="sub">O English Dove está a ser descarregado.<br/>Aguarda um momento.</div>
-<div class="manual">O download não começou? <a id="manualLink" href="#">Clica aqui</a></div>
 
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  <div class="card">
 
-const APK = 'https://download.dovelingua.com/English_Dove.apk';
-document.getElementById('manualLink').href = APK;
+    <!-- APP IDENTITY -->
+    <img class="app-icon"
+      src="https://download.dovelingua.com/assets/images/logo-icon.png"
+      alt="English Master"/>
+    <div class="app-name">English <span>Master</span></div>
+    <div class="app-sub">DoveLingua Academy · v3.1.0</div>
 
-const app = initializeApp({
-  apiKey:            'AIzaSyDFxVGUlDJj44e9kDFCRcZ8DfZt9hreX3M',
-  authDomain:        'english-dove.firebaseapp.com',
-  projectId:         'english-dove',
-  storageBucket:     'english-dove.firebasestorage.app',
-  messagingSenderId: '799562330961',
-  appId:             '1:799562330961:web:953f0abca44d3b54f2d970'
-});
+    <!-- STATUS -->
+    <div class="status-label" id="statusLabel">A preparar o teu download...</div>
 
-const db = getFirestore(app);
+    <!-- SUCCESS ICON (hidden until done) -->
+    <div class="success-icon" id="successIcon">✓</div>
 
-async function trackAndDownload() {
-  try {
-    const now = new Date();
-    await addDoc(collection(db, 'app_downloads'), {
-      timestamp:   serverTimestamp(),
-      date:        now.toISOString().split('T')[0],         // "2026-06-08"
-      hour:        now.getHours(),                           // 14
-      dayOfWeek:   now.toLocaleDateString('pt-PT', { weekday:'long' }),
-      month:       now.toLocaleDateString('pt-PT', { month:'long', year:'numeric' }),
-      userAgent:   navigator.userAgent,
-      platform:    navigator.platform || 'unknown',
-      language:    navigator.language || 'unknown',
-      version:     'v1.0.0',
+    <!-- SPINNER -->
+    <div class="spinner-wrap" id="spinnerWrap">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-pct" id="progressPct">0%</div>
+
+    <!-- INFO PILLS -->
+    <div class="info-pills">
+      <span class="info-pill">📱 Android</span>
+      <span class="info-pill">4.25 MB</span>
+      <span class="info-pill">100% Grátis</span>
+    </div>
+
+    <!-- MANUAL LINK -->
+    <div class="manual">
+      O download não começou? <a id="manualLink" href="https://download.dovelingua.com/English_Master.apk" download>Clica aqui</a><br/>
+      Suporte: <a href="https://www.dovelingua.com/public/contact" target="_blank">dovelingua.com/public/contact</a>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- COMMUNITY -->
+    <div class="comm-title">Enquanto aguardas...</div>
+    <div class="comm-links">
+
+      <div class="comm-group-label">Grupos</div>
+
+      <a class="comm-link wa"
+        href="https://chat.whatsapp.com/H1ft0RRO3VSJpe8rOCypQB?s=cl&p=a&ilr=0"
+        target="_blank">
+        <div class="comm-link-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </div>
+        <div class="comm-link-body">
+          <span class="comm-link-title">Grupo da Academia</span>
+          <span class="comm-link-sub">Comunidade DoveLingua Academy</span>
+        </div>
+      </a>
+
+      <a class="comm-link wa2"
+        href="https://chat.whatsapp.com/FVYCayFjaGCAdCwrGEaJrv?s=cl&p=a&ilr=0"
+        target="_blank">
+        <div class="comm-link-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </div>
+        <div class="comm-link-body">
+          <span class="comm-link-title">Grupo English Master</span>
+          <span class="comm-link-sub">Pratica inglês com outros estudantes</span>
+        </div>
+      </a>
+
+      <div class="comm-group-label">Canais</div>
+
+      <a class="comm-link ch"
+        href="https://whatsapp.com/channel/0029Vazz6iMGzzKLDWc0aY0V"
+        target="_blank">
+        <div class="comm-link-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </div>
+        <div class="comm-link-body">
+          <span class="comm-link-title">Canal English Master 🏆🎓</span>
+          <span class="comm-link-sub">Novidades do English Master</span>
+        </div>
+      </a>
+
+      <a class="comm-link ch2"
+        href="https://whatsapp.com/channel/0029VbBYTdo9Gv7LFw6E9s1k"
+        target="_blank">
+        <div class="comm-link-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </div>
+        <div class="comm-link-body">
+          <span class="comm-link-title">Canal Academia DoveLingua 📖🎓</span>
+          <span class="comm-link-sub">Novidades da Academia</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- DoveLingua footer -->
+  <div class="dl-footer">
+    <img src="https://download.dovelingua.com/assets/images/dovelingua-logo.png" alt="DoveLingua Academy"/>
+    <div class="dl-footer-copy">© <span id="dlYear"></span> DoveLingua Academy</div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, doc, getDoc, setDoc, increment, serverTimestamp }
+      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    document.getElementById('dlYear').textContent = new Date().getFullYear();
+
+    const APK = 'https://download.dovelingua.com/English_Master.apk';
+
+    const app = initializeApp({
+      apiKey:            'AIzaSyDFxVGUlDJj44e9kDFCRcZ8DfZt9hreX3M',
+      authDomain:        'english-dove.firebaseapp.com',
+      projectId:         'english-dove',
+      storageBucket:     'english-dove.firebasestorage.app',
+      messagingSenderId: '799562330961',
+      appId:             '1:799562330961:web:953f0abca44d3b54f2d970'
     });
-  } catch(e) {
-    // Silent — still download even if logging fails
-    console.warn('Track error:', e);
-  }
-  // Trigger download
-  const a = document.createElement('a');
-  a.href = APK;
-  a.download = 'English_Dove.apk';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
 
-// Small delay so spinner shows, then track + download
-setTimeout(trackAndDownload, 800);
-</script>
+    const db = getFirestore(app);
+
+    // ── PROGRESS ANIMATION ──
+    var prog = 0;
+    var fill = document.getElementById('progressFill');
+    var pct  = document.getElementById('progressPct');
+
+    var progTimer = setInterval(function() {
+      prog = Math.min(prog + 12, 85);
+      fill.style.width = prog + '%';
+      pct.textContent  = prog + '%';
+    }, 120);
+
+    function completeProgress() {
+      clearInterval(progTimer);
+      fill.style.width = '100%';
+      pct.textContent  = '100%';
+    }
+
+    // ── TRIGGER DOWNLOAD ──
+    function triggerDownload() {
+      var a = document.createElement('a');
+      a.href = APK;
+      a.download = 'English_Master.apk';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // ── SHOW SUCCESS STATE ──
+    function showSuccess() {
+      completeProgress();
+      document.getElementById('statusLabel').textContent = 'Download iniciado com sucesso!';
+      document.getElementById('spinnerWrap').style.display = 'none';
+      document.getElementById('successIcon').classList.add('show');
+    }
+
+    // ── TRACK + DOWNLOAD ──
+    async function trackAndDownload() {
+      var now = new Date();
+
+      // 1. Trigger download immediately (don't wait for Firestore)
+      triggerDownload();
+
+      try {
+        // 2. Log individual download event
+        await addDoc(collection(db, 'app_downloads'), {
+          timestamp:  serverTimestamp(),
+          date:       now.toISOString().split('T')[0],
+          hour:       now.getHours(),
+          dayOfWeek:  now.toLocaleDateString('pt-PT', { weekday: 'long' }),
+          month:      now.toLocaleDateString('pt-PT', { month: 'long', year: 'numeric' }),
+          userAgent:  navigator.userAgent,
+          platform:   navigator.platform || 'unknown',
+          language:   navigator.language || 'unknown',
+          version:    'v3.1.0',
+        });
+
+        // 3. Increment counter in stats/downloads
+        // Base of 233 (old version downloads) is seeded by creating the doc
+        // with { total: 233 } once. After that, increment keeps adding.
+        var statsRef = doc(db, 'stats', 'downloads');
+        var snap = await getDoc(statsRef);
+        if (!snap.exists()) {
+          // First time — seed with old version count + this download
+          await setDoc(statsRef, { total: 234 });
+        } else {
+          await setDoc(statsRef, { total: increment(1) }, { merge: true });
+        }
+      } catch(e) {
+        // Silent — download already triggered
+        console.warn('Track error:', e);
+      }
+
+      showSuccess();
+    }
+
+    // Small delay so spinner shows, then track + download
+    setTimeout(trackAndDownload, 900);
+  </script>
 </body>
 </html>
