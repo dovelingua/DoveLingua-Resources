@@ -1083,8 +1083,11 @@
     window.firestoreTrackDownload = function() {
       updateDoc(doc(db, 'stats', 'downloads'), {
         total: increment(1)
+      }).then(function() {
+        console.log('Download counted successfully!');
       }).catch(function(e) { console.warn('Firestore increment failed:', e); });
     };
+    window._firestoreReady = true;
 
     // ── LIVE DOWNLOAD COUNT ──
     // stats/downloads has: { total: <number including old version downloads> }
@@ -1117,7 +1120,15 @@
 
     // ── DOWNLOAD TRACKER (EmailJS only — Firestore handled in track page) ──
     function trackDownload(source) {
-  if (window.firestoreTrackDownload) window.firestoreTrackDownload();
+  var attempts = 0;
+  var tryIncrement = setInterval(function() {
+    attempts++;
+    if (window.firestoreTrackDownload && window._firestoreReady) {
+      window.firestoreTrackDownload();
+      clearInterval(tryIncrement);
+    }
+    if (attempts > 20) clearInterval(tryIncrement);
+  }, 100);
   var now = new Date().toLocaleString('pt-PT');
   emailjs.send('service_1pidymc', 'template_28tmhkb', {
     to_email:   'evaluate@dovelingua.com',
