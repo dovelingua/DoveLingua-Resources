@@ -1064,52 +1064,53 @@
 
   <!-- ═══ FIREBASE SDK ═══ -->
   <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import { getFirestore, doc, getDoc, onSnapshot, updateDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, addDoc, getCountFromServer, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-    const app = initializeApp({
-      apiKey:            'AIzaSyDFxVGUlDJj44e9kDFCRcZ8DfZt9hreX3M',
-      authDomain:        'english-dove.firebaseapp.com',
-      projectId:         'english-dove',
-      storageBucket:     'english-dove.firebasestorage.app',
-      messagingSenderId: '799562330961',
-      appId:             '1:799562330961:web:953f0abca44d3b54f2d970'
-    });
+  const app = initializeApp({
+    apiKey:            'AIzaSyDFxVGUlDJj44e9kDFCRcZ8DfZt9hreX3M',
+    authDomain:        'english-dove.firebaseapp.com',
+    projectId:         'english-dove',
+    storageBucket:     'english-dove.firebasestorage.app',
+    messagingSenderId: '799562330961',
+    appId:             '1:799562330961:web:953f0abca44d3b54f2d970'
+  });
 
-    const db = getFirestore(app);
-    window._firestoreDb = db;
+  const db = getFirestore(app);
 
-    // ── TRACK DOWNLOAD FUNCTION (called from buttons) ──
-    window.firestoreTrackDownload = function() {
-      updateDoc(doc(db, 'stats', 'downloads'), {
-        total: increment(1)
-      }).catch(function(e) { console.warn('Firestore increment failed:', e); });
-    };
+  // ── TRACK DOWNLOAD — saves to app_downloads just like admin page expects ──
+  window.firestoreTrackDownload = function() {
+    var today = new Date().toISOString().split('T')[0];
+    var hour  = new Date().getHours();
+    addDoc(collection(db, 'app_downloads'), {
+      timestamp: serverTimestamp(),
+      date:      today,
+      hour:      hour,
+      version:   'v3.1.0',
+      userAgent: navigator.userAgent,
+      language:  navigator.language || '—',
+      source:    'download-page'
+    }).catch(function(e) { console.warn('Firestore write failed:', e); });
+  };
 
-    // ── LIVE DOWNLOAD COUNT ──
-    // stats/downloads has: { total: <number including old version downloads> }
-    // OLD version count (233) is seeded into the document as the base.
-    var _dlAnimated = false;
-    onSnapshot(doc(db, 'stats', 'downloads'), function(snap) {
-      var total = snap.exists() ? (snap.data().total || 233) : 233;
-      var el = document.getElementById('statDownloads');
-      if (!el) return;
-      if (_dlAnimated) {
-        // After first load, just update the number quietly
-        el.textContent = total.toLocaleString('pt-PT');
-        return;
-      }
-      _dlAnimated = true;
-      var dur = 1800, steps = 60, count = 0;
-      var inc = total / steps;
-      var iv = setInterval(function() {
-        count++;
-        var val = Math.min(Math.floor(inc * count), total);
-        el.textContent = val.toLocaleString('pt-PT');
-        if (count >= steps) { el.textContent = total.toLocaleString('pt-PT'); clearInterval(iv); }
-      }, dur / steps);
-    });
-  </script>
+  // ── LIVE DOWNLOAD COUNT — reads real count from app_downloads ──
+  var _dlAnimated = false;
+  getCountFromServer(collection(db, 'app_downloads')).then(function(snap) {
+    var total = snap.data().count + 233; // 233 = old version downloads
+    var el = document.getElementById('statDownloads');
+    if (!el) return;
+    if (_dlAnimated) { el.textContent = total.toLocaleString('pt-PT'); return; }
+    _dlAnimated = true;
+    var steps = 60, count = 0, inc = total / steps;
+    var iv = setInterval(function() {
+      count++;
+      el.textContent = Math.min(Math.floor(inc * count), total).toLocaleString('pt-PT');
+      if (count >= steps) { el.textContent = total.toLocaleString('pt-PT'); clearInterval(iv); }
+    }, 1800 / steps);
+  }).catch(function() {
+    document.getElementById('statDownloads').textContent = '233+';
+  });
+</script>
 
   <script>
     // ── EMAILJS ──
