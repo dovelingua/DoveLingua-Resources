@@ -1096,7 +1096,7 @@
   // ── LIVE DOWNLOAD COUNT — reads real count from app_downloads ──
   var _dlAnimated = false;
   getCountFromServer(collection(db, 'app_downloads')).then(function(snap) {
-    var total = snap.data().count + 233; // 233 = old version downloads
+    var total = snap.data().count;
     var el = document.getElementById('statDownloads');
     if (!el) return;
     if (_dlAnimated) { el.textContent = total.toLocaleString('pt-PT'); return; }
