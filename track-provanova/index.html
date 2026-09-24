@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt" translate="no" class="notranslate">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="google" content="notranslate">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#0057FF">
+  <title>A iniciar download — ProvaNova</title>
+
+  <!-- Favicons -->
+  <link rel="icon" type="image/x-icon" sizes="16x16" href="/assets/provanova-images/favicon-16x16.ico">
+  <link rel="icon" type="image/x-icon" sizes="48x48" href="/assets/provanova-images/favicon-48x48.ico">
+  <link rel="icon" type="image/x-icon" sizes="32x32" href="/assets/provanova-images/favicon-32x32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/provanova-images/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/provanova-images/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/assets/provanova-images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/provanova-images/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/assets/provanova-images/icon-512x512.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:      #0057FF;
+      --blue-dark: #0044CC;
+      --teal:      #00695C;
+      --teal-light:#E6F4F1;
+      --green:     #2E7D32;
+      --gold-dark: #E65100;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      min-height: 100dvh; min-height: 100vh;
+      background: linear-gradient(160deg, #001B66 0%, #0033AA 40%, #0057FF 72%, #1565C0 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 28px 20px;
+      position: relative; overflow: hidden;
+    }
+
+    /* ── BACKGROUND ── */
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 28px 28px; pointer-events: none;
+    }
+    .bg-glow {
+      position: absolute; width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+      top: 40%; left: 50%; transform: translate(-50%,-50%);
+      animation: glow 6s ease-in-out infinite; pointer-events: none;
+    }
+    @keyframes glow {
+      0%,100% { opacity:0.5; transform:translate(-50%,-50%) scale(1);    }
+      50%      { opacity:1;   transform:translate(-50%,-50%) scale(1.25); }
+    }
+    .top-line {
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.8) 50%, rgba(255,255,255,0.4) 70%, transparent 100%);
+    }
+    .particle {
+      position: absolute; border-radius: 50%; pointer-events: none; opacity: 0;
+      animation: particleFly 8s ease-in-out infinite;
+    }
+    @keyframes particleFly {
+      0%   { opacity:0; transform:translateY(0) scale(0); }
+      10%  { opacity:0.4; }
+      90%  { opacity:0.12; }
+      100% { opacity:0; transform:translateY(-140px) scale(1.5); }
+    }
+    .p1 { width:6px; height:6px; background:rgba(255,255,255,0.2);  top:76%; left:10%; animation-delay:0s;   }
+    .p2 { width:4px; height:4px; background:rgba(255,255,255,0.15); top:64%; left:82%; animation-delay:2s;   }
+    .p3 { width:8px; height:8px; background:rgba(255,255,255,0.12); top:82%; left:48%; animation-delay:3.5s; }
+    .p4 { width:3px; height:3px; background:rgba(255,255,255,0.25); top:70%; left:65%; animation-delay:5s;   }
+    .p5 { width:5px; height:5px; background:rgba(255,255,255,0.16); top:78%; left:28%; animation-delay:2.2s; }
+
+    /* ── CARD ── */
+    .card {
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.16);
+      border-radius: 28px; padding: 36px 28px 32px;
+      max-width: 390px; width: 100%; text-align: center;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+      position: relative; z-index: 1;
+      animation: fadeUp 0.5s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(22px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── LOGO ── */
+    .logo-row {
+      display: flex; align-items: center; justify-content: center;
+      gap: 9px; margin-bottom: 26px;
+    }
+    .logo-img  { width: 30px; height: 30px; border-radius: 8px; object-fit: contain; }
+    .logo-name { font-size: 17px; font-weight: 900; color: #fff; letter-spacing: -0.3px; }
+
+    /* ── APP ICON ── */
+    .app-icon {
+      width: 84px; height: 84px; border-radius: 22px;
+      margin: 0 auto 18px; display: block;
+      box-shadow: 0 12px 38px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.14);
+      animation: iconPulse 2.6s ease-in-out infinite;
+    }
+    @keyframes iconPulse {
+      0%,100% { box-shadow: 0 12px 38px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.14); }
+      50%      { box-shadow: 0 18px 50px rgba(0,0,0,0.4), 0 0 0 6px rgba(255,255,255,0.06); }
+    }
+
+    /* ── STATUS ── */
+    .status-label {
+      font-size: 15px; font-weight: 700; color: #fff;
+      margin-bottom: 18px; min-height: 22px; line-height: 1.3;
+    }
+
+    /* ── SUCCESS ICON ── */
+    .success-icon {
+      width: 58px; height: 58px; border-radius: 50%;
+      background: rgba(46,125,50,0.2); border: 2px solid rgba(46,125,50,0.5);
+      display: none; align-items: center; justify-content: center;
+      font-size: 22px; color: #86EFAC; margin: 0 auto 18px;
+    }
+    .success-icon.show { display: flex; }
+
+    /* ── SPINNER ── */
+    .spinner-wrap { display: flex; justify-content: center; margin-bottom: 18px; }
+    .spinner {
+      width: 44px; height: 44px;
+      border: 3px solid rgba(255,255,255,0.12);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.85s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── PROGRESS ── */
+    .progress-wrap {
+      background: rgba(255,255,255,0.1); border-radius: 20px;
+      height: 5px; overflow: hidden; margin-bottom: 7px;
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, rgba(255,255,255,0.5), #fff);
+      border-radius: 20px; transition: width 0.4s ease;
+    }
+    .progress-pct { font-size: 11px; color: rgba(255,255,255,0.35); text-align: right; margin-bottom: 22px; }
+
+    /* ── PILLS ── */
+    .info-pills { display: flex; justify-content: center; gap: 7px; flex-wrap: wrap; margin-bottom: 22px; }
+    .info-pill {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px; padding: 4px 12px;
+      font-size: 11px; color: rgba(255,255,255,0.6);
+    }
+
+    /* ── MANUAL LINK ── */
+    .manual { font-size: 12px; color: rgba(255,255,255,0.32); margin-top: 4px; line-height: 1.75; }
+    .manual a { color: rgba(255,255,255,0.65); font-weight: 700; }
+    .manual a:hover { color: #fff; }
+
+    /* ── DIVIDER ── */
+    .divider { height: 1px; background: rgba(255,255,255,0.08); margin: 24px 0; }
+
+    /* ── COMMUNITY LINKS ── */
+    .comm-title {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: rgba(255,255,255,0.32); margin-bottom: 12px;
+    }
+    .comm-links { display: flex; flex-direction: column; gap: 8px; }
+    .comm-group-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.09em; color: rgba(255,255,255,0.28);
+      padding: 5px 0 2px; text-align: left;
+    }
+    .comm-link {
+      display: flex; align-items: center; gap: 11px;
+      padding: 12px 14px; border-radius: 14px;
+      text-decoration: none; font-weight: 600; font-size: 13px;
+      transition: opacity 0.18s, transform 0.15s;
+    }
+    .comm-link:hover { opacity: 0.86; transform: translateY(-1px); }
+    .comm-link.wa    { background: #25D366; color: #fff; }
+    .comm-link.wa-ch { background: #075E54; color: #fff; }
+    .comm-link.navy  { background: rgba(0,0,0,0.24); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.82); }
+    .comm-link-ico {
+      width: 32px; height: 32px; border-radius: 9px;
+      background: rgba(255,255,255,0.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0;
+    }
+    .comm-link-body { flex: 1; text-align: left; }
+    .comm-link-title { display: block; font-weight: 700; font-size: 13px; }
+    .comm-link-sub   { display: block; font-size: 11px; opacity: 0.62; margin-top: 1px; }
+    .comm-link-arrow { font-size: 10px; opacity: 0.35; }
+
+    /* ── FOOTER ── */
+    .footer-text {
+      margin-top: 22px; font-size: 11px;
+      color: rgba(255,255,255,0.18); letter-spacing: 0.05em;
+      text-align: center; position: relative; z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-line"></div>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+  <div class="particle p1"></div>
+  <div class="particle p2"></div>
+  <div class="particle p3"></div>
+  <div class="particle p4"></div>
+  <div class="particle p5"></div>
+
+  <div class="card">
+
+    <!-- Logo -->
+    <div class="logo-row">
+      <img class="logo-img notranslate" src="/assets/provanova-images/icon-96x96.png" alt="ProvaNova" onerror="this.style.display='none'">
+      <span class="logo-name notranslate" translate="no">ProvaNova</span>
+    </div>
+
+    <!-- App icon -->
+    <img
+      class="app-icon notranslate"
+      src="/assets/provanova-images/icon-192x192.png"
+      alt="ProvaNova — Aplicação para Professores"
+      onerror="this.style.display='none'"
+    >
+
+    <!-- Status label -->
+    <div class="status-label notranslate" translate="no" id="statusLabel">
+      A preparar o teu download...
+    </div>
+
+    <!-- Success icon (hidden initially) -->
+    <div class="success-icon" id="successIcon" aria-hidden="true">
+      <i class="fa-solid fa-check"></i>
+    </div>
+
+    <!-- Spinner -->
+    <div class="spinner-wrap" id="spinnerWrap" aria-label="A processar">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="progress-wrap" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-pct notranslate" translate="no" id="progressPct">0%</div>
+
+    <!-- Info pills -->
+    <div class="info-pills notranslate" translate="no" aria-hidden="true">
+      <span class="info-pill"><i class="fa-brands fa-android"></i> Android</span>
+      <span class="info-pill"><i class="fa-solid fa-file-zipper"></i> 3.20 MB</span>
+      <span class="info-pill"><i class="fa-solid fa-coins"></i> 100% Grátis</span>
+      <span class="info-pill">🇲🇿 MEC</span>
+    </div>
+
+    <!-- Manual link -->
+    <div class="manual notranslate" translate="no">
+      O download não começou?
+      <a id="manualLink" href="https://download.dovelingua.com/provanova/provanova.apk" download>Clica aqui</a><br>
+      Suporte: <a href="https://wa.me/258848920143" target="_blank" rel="noopener">WhatsApp +258 84 892 0143</a>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Community -->
+    <div class="comm-title notranslate" translate="no">Enquanto aguardas...</div>
+    <div class="comm-links notranslate" translate="no">
+
+      <div class="comm-group-label">Suporte</div>
+
+      <a class="comm-link wa" href="https://wa.me/258848920143" target="_blank" rel="noopener" aria-label="Suporte ProvaNova no WhatsApp">
+        <div class="comm-link-ico"><i class="fa-brands fa-whatsapp"></i></div>
+        <div class="comm-link-body">
+          <span class="comm-link-title">Suporte ProvaNova</span>
+          <span class="comm-link-sub">Fala directamente com a equipa</span>
+        </div>
+        <i class="fa-solid fa-chevron-right comm-link-arrow"></i>
+      </a>
+
+      <div class="comm-group-label" style="margin-top:6px;">Plataforma</div>
+
+      <a class="comm-link navy" href="/plataforma" aria-label="Usar ProvaNova no browser">
+        <div class="comm-link-ico"><i class="fa-solid fa-globe"></i></div>
+        <div class="comm-link-body">
+          <span class="comm-link-title">Usar no browser</span>
+          <span class="comm-link-sub">provanova.dovelingua.com</span>
+        </div>
+        <i class="fa-solid fa-chevron-right comm-link-arrow"></i>
+      </a>
+
+      <a class="comm-link navy" href="/auth" aria-label="Entrar na plataforma ProvaNova">
+        <div class="comm-link-ico"><i class="fa-solid fa-arrow-right-to-bracket"></i></div>
+        <div class="comm-link-body">
+          <span class="comm-link-title">Entrar na plataforma</span>
+          <span class="comm-link-sub">Criar conta ou iniciar sessão</span>
+        </div>
+        <i class="fa-solid fa-chevron-right comm-link-arrow"></i>
+      </a>
+
+      <a class="comm-link navy" href="/download" aria-label="Voltar à página de download">
+        <div class="comm-link-ico"><i class="fa-solid fa-arrow-left"></i></div>
+        <div class="comm-link-body">
+          <span class="comm-link-title">Voltar à página de download</span>
+          <span class="comm-link-sub">Ver mais informações sobre a app</span>
+        </div>
+        <i class="fa-solid fa-chevron-right comm-link-arrow"></i>
+      </a>
+
+    </div>
+  </div>
+
+  <div class="footer-text notranslate" translate="no">
+    ProvaNova · © <span id="footerYear"></span> · Todos os direitos reservados
+  </div>
+
+  <!-- FIREBASE — writes to appDownload, same collection the admin reads -->
+  <script type="module">
+    import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, collection, addDoc, serverTimestamp }
+      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    document.getElementById('footerYear').textContent = new Date().getFullYear();
+
+    const APK = 'https://download.dovelingua.com/provanova/provanova.apk';
+
+    // Same Firebase project as admin / main app
+    const app = initializeApp({
+      apiKey:            "AIzaSyCZF2sBHQeWWBgkNtGtUa65hHG8h4GiUDo",
+      authDomain:        "provanova-app.firebaseapp.com",
+      projectId:         "provanova-app",
+      storageBucket:     "provanova-app.appspot.com",
+      messagingSenderId: "294858271906",
+      appId:             "1:294858271906:web:provanova-main"
+    });
+
+    const db = getFirestore(app);
+
+    // ── PROGRESS ANIMATION ──
+    let prog = 0;
+    const fillEl = document.getElementById('progressFill');
+    const pctEl  = document.getElementById('progressPct');
+    const progTimer = setInterval(() => {
+      prog = Math.min(prog + 11, 85);
+      fillEl.style.width = prog + '%';
+      pctEl.textContent  = prog + '%';
+    }, 120);
+
+    function completeProgress() {
+      clearInterval(progTimer);
+      fillEl.style.width = '100%';
+      pctEl.textContent  = '100%';
+    }
+
+    // ── TRIGGER DOWNLOAD ──
+    function triggerDownload() {
+      const a = document.createElement('a');
+      a.href     = APK;
+      a.download = 'ProvaNova.apk';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // ── SHOW SUCCESS ──
+    function showSuccess() {
+      completeProgress();
+      document.getElementById('statusLabel').textContent = 'Download iniciado com sucesso! ✅';
+      document.getElementById('spinnerWrap').style.display = 'none';
+      document.getElementById('successIcon').classList.add('show');
+    }
+
+    // ── TRACK + DOWNLOAD ──
+    async function trackAndDownload() {
+      // Always trigger immediately — never block on Firestore
+      triggerDownload();
+
+      try {
+        // Write to appDownload — the same collection the admin analytics reads
+        // Fields match what the admin query expects: createdAt, date, hour
+        await addDoc(collection(db, 'appDownload'), {
+          createdAt: serverTimestamp(),
+          date:      new Date().toISOString().split('T')[0],
+          hour:      new Date().getHours(),
+          userAgent: navigator.userAgent,
+          platform:  navigator.platform || 'unknown',
+          language:  navigator.language || 'unknown',
+          source:    'download-page',
+        });
+      } catch(e) {
+        // Silent — download already triggered, tracking is best-effort
+        console.warn('[ProvaNova] Download track error:', e);
+      }
+
+      showSuccess();
+    }
+
+    // Small delay so the spinner is visible before the browser dialog appears
+    setTimeout(trackAndDownload, 900);
+  </script>
+
+</body>
+</html>
