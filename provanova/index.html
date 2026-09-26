@@ -642,6 +642,32 @@
       from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+    @keyframes btnGlow {
+      0%, 100% { box-shadow: 0 4px 20px rgba(0,87,255,0.35); }
+      50%       { box-shadow: 0 4px 32px rgba(0,87,255,0.65), 0 0 0 4px rgba(0,87,255,0.12); }
+    }
+
+    @keyframes btnShimmer {
+      0%   { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .btn-animated {
+      position: relative;
+      overflow: hidden;
+      animation: btnGlow 2s ease-in-out infinite;
+      background: linear-gradient(
+        90deg,
+        var(--blue) 0%,
+        var(--blue) 40%,
+        rgba(255,255,255,0.25) 50%,
+        var(--blue) 60%,
+        var(--blue) 100%
+      );
+      background-size: 200% auto;
+      animation: btnGlow 2s ease-in-out infinite, btnShimmer 3s linear infinite;
+    }
   </style>
 </head>
 <body>
@@ -656,7 +682,7 @@
       <a class="topbar-plat-link" href="/plataforma">
         <i class="fa-solid fa-globe"></i> Usar no browser
       </a>
-      <a class="topbar-dl-btn" href="/track-provanova">
+      <a class="topbar-dl-btn btn-animated" href="/track-provanova">
         <i class="fa-solid fa-download"></i> Descarregar
       </a>
     </div>
@@ -698,7 +724,7 @@
         em segundos.
       </p>
 
-      <a class="hero-dl-btn" href="/track-provanova">
+      <a class="hero-dl-btn btn-animated" href="/track-provanova">
         <i class="fa-solid fa-download"></i>
         Descarregar Grátis <span style="font-size:18px;">📱</span>
       </a>
@@ -1159,7 +1185,7 @@
       <div class="sticky-name notranslate" translate="no">ProvaNova</div>
       <div class="sticky-sub">Gratuito · 3.20 MB · Android</div>
     </div>
-    <a class="sticky-btn" href="/track-provanova">
+    <a class="sticky-btn btn-animated" href="/track-provanova">
       <i class="fa-solid fa-download"></i> Descarregar
     </a>
   </div>
@@ -1181,8 +1207,8 @@
         <div>
           <div class="footer-col-title">Plataforma</div>
           <div class="footer-col-links">
-            <a class="footer-col-link" href="https://provanova.dovelingua.com/auth"><i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar</a>
-            <a class="footer-col-link" href="https://provanova.dovelingua.com/auth"><i class="fa-solid fa-user-plus"></i> Criar conta</a>
+            <a class="footer-col-link" href="https://provanova.dovelingua.com/auth?tab=login"><i class="fa-solid fa-arrow-right-to-bracket"></i> Entrar</a>
+            <a class="footer-col-link" href="https://provanova.dovelingua.com/auth?tab=register"><i class="fa-solid fa-user-plus"></i> Criar conta</a>
             <a class="footer-col-link" href="https://provanova.dovelingua.com/plataforma"><i class="fa-solid fa-globe"></i> Plataforma web</a>
             <a class="footer-col-link" href="/track-provanova"><i class="fa-solid fa-download"></i> Descarregar APK</a>
           </div>
