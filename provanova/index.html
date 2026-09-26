@@ -236,9 +236,11 @@
 
     .hero-dl-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-      color: var(--blue-dark);
+      color: #1A1A2E;
       font-size: 16px; font-weight: 800;
       padding: 15px 34px; border-radius: 50px;
+      background: #FFB300 !important;
+      background-size: 300% auto !important;
       transition: filter 0.2s, transform 0.15s;
       margin-bottom: 12px;
       animation: fadeUp 0.5s 0.24s ease both;
@@ -593,7 +595,17 @@
     }
 
     .hero-dl-btn.btn-animated {
-      color: #fff !important;
+      color: #1A1A2E !important;
+      background: linear-gradient(
+        105deg,
+        #FFB300 0%,
+        #FFB300 30%,
+        rgba(255,255,255,0.6) 48%,
+        rgba(255,255,255,0.8) 50%,
+        rgba(255,255,255,0.6) 52%,
+        #FFB300 70%,
+        #FFB300 100%
+      ) !important;
     }
   </style>
 </head>
@@ -607,7 +619,7 @@
         <span class="topbar-logo-name">ProvaNova</span>
       </a>
       <a class="topbar-plat-link" href="https://provanova.dovelingua.com/auth?tab=login">
-        <i class="fa-solid fa-globe"></i> Usar no browser
+        <i class="fa-solid fa-globe"></i> Usar no navegador
       </a>
       <a class="topbar-dl-btn btn-animated" href="/track-provanova">
         <i class="fa-solid fa-download"></i> Descarregar
@@ -869,8 +881,8 @@
           <div class="feat-card-ico" style="background:#E8F5E9;">
             <i class="fa-solid fa-mobile-screen-button" style="color:#2E7D32;"></i>
           </div>
-          <div class="feat-card-name">Browser e telemóvel</div>
-          <div class="feat-card-desc">Use no browser do computador ou instale a aplicação no telemóvel Android para acesso rápido.</div>
+          <div class="feat-card-name">Navegador e telemóvel</div>
+          <div class="feat-card-desc">Use no Navegador do computador ou instale a aplicação no telemóvel Android para acesso rápido.</div>
         </div>
         <div class="feat-card" style="--accent-color:#FFB300;">
           <div class="feat-card-ico" style="background:#FFF8E1;">
@@ -1036,7 +1048,7 @@
               <i class="fa-solid fa-chevron-down"></i>
             </button>
             <div class="faq-a">
-              Sim. O ProvaNova funciona directamente no browser do seu telemóvel ou computador, sem necessidade de instalar nada. Aceda a <strong>provanova.dovelingua.com</strong> e crie a sua conta. A aplicação Android é opcional — para acesso mais rápido.
+              Sim. O ProvaNova funciona directamente no Navegador do seu telemóvel ou computador, sem necessidade de instalar nada. Aceda a <strong>provanova.dovelingua.com</strong> e crie a sua conta. A aplicação Android é opcional — para acesso mais rápido.
             </div>
           </div>
           <div class="faq-item">
